@@ -11,48 +11,115 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+
+import { InputAdornment } from "@mui/material";
+import AlertMessage from "../../components/AlertMessage";
 
 // Storage
 
-import { addData, setCurrentUser } from "../../storage/Storage";
-
+import { addData, getData, setOnlineUsers } from "../../storage/Storage";
 const defaultTheme = createTheme();
 
-export default function SignUp({ setIsUserLoggedIn }) {
+function getUniqueId() {
+  return Math.floor(100000 + Math.random() * 900000);
+}
+const regex = {
+  email: /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{1,5})$/,
+  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+};
 
+const userData = getData();
 
+export default function SignUp({
+  setIsUserLoggedIn,
+  setCurrentUser,
+  setAlertMessageData,
+  alertMessageData,
+}) {
   const navigate = useNavigate();
 
-  const [data, setData] = React.useState({ email: '', password: '', confirmPassword: '' });
+  // const alertMessageBtnRef = React.useRef(null);
 
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [userExists, setUserExists] = React.useState(false);
 
-  function getUniqueId() {
-    return Math.floor(100000 + Math.random() * 900000);
-  }
+  // const [alertMessage, setAlertMessage] = React.useState({
+  //   message: "",
+  //   type: "",
+  // });
 
+  const [data, setData] = React.useState({
+    userId: getUniqueId(),
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [handleErrors, setHandleErrors] = React.useState({
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
 
   function handleData(e) {
+    setData({ ...data, [e.target.name]: e.target.value });
+    setUserExists(userData.some((user) => user.email === e.target.value));
 
-    setData({ ...data, [e.target.name]: e.target.value })
-
+    setHandleErrors({
+      ...handleErrors,
+      [e.target.name]:
+        e.target.value === ""
+          ? false
+          : !e.target.value.match(regex[e.target.name]),
+    });
   }
 
   function handleSignUp(event) {
     event.preventDefault();
 
-    if (data.email && data.password && data.confirmPassword) {
+    if (data.email && data.password && data.confirmPassword && !userExists) {
+      addData({
+        userId: data.userId,
+        email: data.email,
+        password: data.password,
+      });
 
-      addData({ userId: getUniqueId(), email: data.email, password: data.password });
-      setIsUserLoggedIn(true)
-      setCurrentUser({ userId: getUniqueId(), email: data.email, password: data.password })
-      navigate('/contactlist')
+      setCurrentUser({
+        userId: data.userId,
+        email: data.email,
+        password: data.password,
+      });
+
+      // setOnlineUsers(data.userId);
+      sessionStorage.setItem(
+        "currentUser",
+        JSON.stringify({
+          userId: data.userId,
+          email: data.email,
+          password: data.password,
+        })
+      );
+
+      setAlertMessageData({
+        message: "Signed Up Successfully!!",
+        type: "success",
+        ref: null,
+      });
+      setTimeout(() => {
+        setIsUserLoggedIn(true);
+        navigate("/contactList");
+      }, 1000);
+    } else {
+      setAlertMessageData({
+        message: "Please fill all the fields.",
+        type: "warning",
+        ref: null,
+      });
     }
-
-
+    alertMessageData.ref?.current.click();
   }
-
-
-
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -72,12 +139,8 @@ export default function SignUp({ setIsUserLoggedIn }) {
           <Typography component="h1" variant="h5">
             Sign Up
           </Typography>
-          <Box
-            component="form"
-            sx={{ mt: 1 }}
-          >
+          <Box component="form" sx={{ mt: 1 }}>
             <TextField
-
               // helperText={"Please enter your email"}
               margin="normal"
               required
@@ -87,8 +150,14 @@ export default function SignUp({ setIsUserLoggedIn }) {
               name="email"
               autoComplete="email"
               autoFocus
-              value={data.name}
+              value={data.email}
               onChange={handleData}
+              error={handleErrors.email || userExists}
+              helperText={
+                userExists
+                  ? "User already exists"
+                  : handleErrors.email && "Please enter a valid email"
+              }
             />
             <TextField
               margin="normal"
@@ -96,11 +165,32 @@ export default function SignUp({ setIsUserLoggedIn }) {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               autoComplete="current-password"
               value={data.password}
               onChange={handleData}
+              error={handleErrors.password}
+              helperText={
+                handleErrors.password && "Please enter a Valid password"
+              }
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    {showPassword ? (
+                      <VisibilityIcon
+                        style={{ cursor: "pointer" }}
+                        onClick={() => setShowPassword(false)}
+                      />
+                    ) : (
+                      <VisibilityOffIcon
+                        style={{ cursor: "pointer" }}
+                        onClick={() => setShowPassword(true)}
+                      />
+                    )}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               margin="normal"
@@ -108,11 +198,12 @@ export default function SignUp({ setIsUserLoggedIn }) {
               fullWidth
               name="confirmPassword"
               label="Confirm Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="confirmPassword"
               autoComplete="current-password"
               value={data.confirmPassword}
               onChange={handleData}
+              error={handleErrors.confirmPassword}
             />
 
             <Button
@@ -127,7 +218,7 @@ export default function SignUp({ setIsUserLoggedIn }) {
             <Grid container>
               <Grid item xs></Grid>
               <Grid item>
-                <Link to="/signin" variant="body2">
+                <Link to="/signIn" variant="body2">
                   {"Already a user? Sign In"}
                 </Link>
               </Grid>

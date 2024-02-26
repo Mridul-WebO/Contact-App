@@ -11,23 +11,99 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
-// TODO remove, this demo shouldn't need to reset the theme.
+import { InputAdornment } from "@mui/material";
 
+// Storage
+
+import { getData } from "../../storage/Storage";
 const defaultTheme = createTheme();
 
-export default function SignIn() {
+const regex = {
+  email: /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{1,5})$/,
+  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+};
 
+const userData = getData();
+
+export default function SignIn({
+  setIsUserLoggedIn,
+  setCurrentUser,
+  setAlertMessageData,
+  alertMessageData,
+}) {
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
+  // const alertMessageBtnRef = React.useRef(null);
+
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [userExists, setUserExists] = React.useState(true);
+
+  // const [alertMessage, setAlertMessage] = React.useState({
+  //   message: "",
+  //   type: "",
+  // });
+
+  const [data, setData] = React.useState({
+    email: "",
+    password: "",
+  });
+
+  const [handleErrors, setHandleErrors] = React.useState({
+    email: false,
+    password: false,
+  });
+
+  function handleData(e) {
+    setData({ ...data, [e.target.name]: e.target.value });
+
+    if (e.target.value === "") {
+      setUserExists(true);
+    } else {
+      setUserExists(userData.some((user) => user.email === e.target.value));
+    }
+
+    setHandleErrors({
+      ...handleErrors,
+      [e.target.name]:
+        e.target.value === ""
+          ? false
+          : !e.target.value.match(regex[e.target.name]),
     });
-  };
+  }
+
+  function handleSignIn(event) {
+    event.preventDefault();
+    const userData = getData().find((user) => user.email === data.email);
+
+    if (data?.email && data.password?.match(userData?.password) && userExists) {
+      setCurrentUser(userData);
+      sessionStorage.setItem("currentUser", JSON.stringify(userData));
+
+      setAlertMessageData({
+        message: "Signed Up Successfully!!",
+        type: "success",
+        ref: null,
+      });
+      navigate("/contactList");
+      setIsUserLoggedIn(true);
+    } else if (!data.password?.match(userData?.password)) {
+      setAlertMessageData({
+        message: "Incorrect Password.",
+        type: "error",
+        ref: null,
+      });
+    } else {
+      setAlertMessageData({
+        message: "Please fill all the fields",
+        type: "warning",
+        ref: null,
+      });
+    }
+    alertMessageData.ref?.current.click();
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -45,15 +121,11 @@ export default function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Sign In
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 1 }}
-          >
+          <Box sx={{ mt: 1 }}>
             <TextField
+              // helperText={"Please enter your email"}
               margin="normal"
               required
               fullWidth
@@ -62,6 +134,14 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              value={data.email}
+              onChange={handleData}
+              error={handleErrors.email || !userExists}
+              helperText={
+                !userExists
+                  ? "User doesn't exists. Please Sign Up."
+                  : handleErrors.email && "Please enter a valid email"
+              }
             />
             <TextField
               margin="normal"
@@ -69,25 +149,45 @@ export default function SignIn() {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               autoComplete="current-password"
+              value={data.password}
+              onChange={(e) =>
+                setData({ ...data, [e.target.name]: e.target.value })
+              }
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    {showPassword ? (
+                      <VisibilityIcon
+                        style={{ cursor: "pointer" }}
+                        onClick={() => setShowPassword(false)}
+                      />
+                    ) : (
+                      <VisibilityOffIcon
+                        style={{ cursor: "pointer" }}
+                        onClick={() => setShowPassword(true)}
+                      />
+                    )}
+                  </InputAdornment>
+                ),
+              }}
             />
 
             <Button
-              type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={() => navigate('/contactList')}
+              onClick={handleSignIn}
             >
               Sign In
             </Button>
             <Grid container>
               <Grid item xs></Grid>
               <Grid item>
-                <Link to="/signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                <Link to="/signUp" variant="body2">
+                  {"Don't have an account?? Sign Up"}
                 </Link>
               </Grid>
             </Grid>

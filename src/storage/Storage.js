@@ -1,4 +1,3 @@
-
 // create methods to perform operations like save/edit/delete/add data
 
 /*
@@ -16,20 +15,19 @@
 
 */
 
-
-const storageId = "userData"
+const storageId = "userData";
 /**
  * Set updated data in localStorage.
  * @param {Array<Object>} dataArr - The updated data array. This array should be decorated.
  * @throws {Error} Throws an error if there is an issue setting the updated data.
  */
 export function setter(dataArr) {
-    try {
-        localStorage.setItem(`${storageId}`, JSON.stringify(dataArr));
-        return true;
-    } catch (error) {
-        throw new Error(error);
-    }
+  try {
+    localStorage.setItem(`${storageId}`, JSON.stringify(dataArr));
+    return true;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 /**
@@ -38,12 +36,12 @@ export function setter(dataArr) {
  * @throws {Error} Throws an error if there is an issue retrieving the data.
  */
 export function getData() {
-    try {
-        const employeeData = JSON.parse(localStorage.getItem(`${storageId}`)) ?? [];
-        return employeeData;
-    } catch (error) {
-        throw new Error(error);
-    }
+  try {
+    const employeeData = JSON.parse(localStorage.getItem(`${storageId}`)) ?? [];
+    return employeeData;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 /**
@@ -53,14 +51,14 @@ export function getData() {
  * @returns {Object} Returns an object with status and the retrieved rowToUpdate.
  */
 export function getSingleData(userId) {
-    try {
-        const storedData = getData();
-        const rowToUpdate = storedData.find((val) => val.userId === userId);
+  try {
+    const storedData = getData();
+    const data = storedData.find((val) => val.userId === userId);
 
-        return rowToUpdate;
-    } catch (error) {
-        throw new Error(error);
-    }
+    return data;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 /**
@@ -69,17 +67,19 @@ export function getSingleData(userId) {
  * @throws {Error} Throws an error if there is an issue editing the data.
  */
 export function editData(dataObj) {
-    try {
-        const storedData = getData();
-        const rowIndex = storedData.findIndex((val) => val.userId === dataObj.userId);
+  try {
+    const storedData = getData();
+    const rowIndex = storedData.findIndex(
+      (val) => val.userId === dataObj.userId
+    );
 
-        storedData.splice(rowIndex, 1, dataObj);
-        setter(storedData);
+    storedData.splice(rowIndex, 1, dataObj);
+    setter(storedData);
 
-        return true;
-    } catch (error) {
-        throw new Error(error);
-    }
+    return true;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 /**
@@ -89,16 +89,16 @@ export function editData(dataObj) {
  * @returns {boolean} Returns true if the data is successfully deleted.
  */
 export function deleteData(userId) {
-    try {
-        const employeeData = getData();
-        const updatedData = employeeData.filter((val) => val.userId !== userId);
+  try {
+    const employeeData = getData();
+    const updatedData = employeeData.filter((val) => val.userId !== userId);
 
-        setter(updatedData);
+    setter(updatedData);
 
-        return true;
-    } catch (error) {
-        throw new Error(error);
-    }
+    return true;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 /**
@@ -108,35 +108,34 @@ export function deleteData(userId) {
  * @returns {boolean} Returns true if the data is successfully added.
  */
 export function addData(dataObj) {
-    try {
-        const employeeData = getData();
-        employeeData.unshift(dataObj);
+  try {
+    const employeeData = getData();
+    employeeData.unshift(dataObj);
 
-        setter(employeeData);
+    setter(employeeData);
 
-        return true;
-    } catch (error) {
-        throw new Error(error);
-    }
+    return true;
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
-
-export function setCurrentUser(dataObj) {
-    try {
-        localStorage.setItem('currentUser', JSON.stringify(dataObj))
-    } catch (error) {
-        throw new Error(error);
-
-
-    }
-}
+// export function setOnlineUsers(userId) {
+//   try {
+//     const data = [
+//       ...(JSON.parse(localStorage.getItem("usersOnline")) || []),
+//       userId,
+//     ];
+//     localStorage.setItem("usersOnline", JSON.stringify(data));
+//   } catch (error) {
+//     throw new Error(error);
+//   }
+// }
 
 export function removeCurrentUser() {
-    try {
-        localStorage.removeItem('currentUser')
-    } catch (error) {
-        throw new Error(error);
-
-
-    }
+  try {
+    sessionStorage.removeItem("currentUser");
+  } catch (error) {
+    throw new Error(error);
+  }
 }
