@@ -84,12 +84,14 @@ export default function SignUp({
         userId: data.userId,
         email: data.email,
         password: data.password,
+        contacts: [],
       });
 
       setCurrentUser({
         userId: data.userId,
         email: data.email,
         password: data.password,
+        contacts: [],
       });
 
       // setOnlineUsers(data.userId);

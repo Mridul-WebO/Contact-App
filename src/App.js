@@ -57,6 +57,7 @@ function App() {
               setIsUserLoggedIn={setIsUserLoggedIn}
               setCurrentUser={setCurrentUser}
               alertMessageData={alertMessageData}
+              setAlertMessageData={setAlertMessageData}
             />
           }
         />

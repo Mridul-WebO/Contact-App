@@ -139,3 +139,11 @@ export function removeCurrentUser() {
     throw new Error(error);
   }
 }
+
+export function addContactDetails(dataObj, userId) {
+  try {
+    const data = getData();
+  } catch (error) {
+    throw new Error(error);
+  }
+}

@@ -14,6 +14,20 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function CustomDialog({ addContactBtnRef }) {
   const [open, setOpen] = React.useState(false);
 
+  const [userContactList, setUserContactList] = React.useState({
+    name: "",
+    email: "",
+    phoneNumber: "",
+  });
+
+  function handleContactData(e) {
+    setUserContactList({ ...userContactList, [e.target.name]: e.target.value });
+  }
+
+  function handleNewContact() {
+    console.log(userContactList);
+  }
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -24,11 +38,7 @@ export default function CustomDialog({ addContactBtnRef }) {
 
   return (
     <React.Fragment>
-      <Button
-        // variant="outlined"
-        ref={addContactBtnRef}
-        onClick={handleClickOpen}
-      ></Button>
+      <Button ref={addContactBtnRef} onClick={handleClickOpen}></Button>
       <Dialog
         open={open}
         TransitionComponent={Transition}
@@ -57,6 +67,8 @@ export default function CustomDialog({ addContactBtnRef }) {
                   name="name"
                   autoComplete="name"
                   autoFocus
+                  value={userContactList.name}
+                  onChange={handleContactData}
                 />
                 <TextField
                   margin="normal"
@@ -67,6 +79,8 @@ export default function CustomDialog({ addContactBtnRef }) {
                   name="email"
                   autoComplete="email"
                   autoFocus
+                  value={userContactList.email}
+                  onChange={handleContactData}
                 />
                 <TextField
                   margin="normal"
@@ -77,9 +91,16 @@ export default function CustomDialog({ addContactBtnRef }) {
                   name="phoneNumber"
                   autoComplete="phoneNumber"
                   autoFocus
+                  value={userContactList.phoneNumber}
+                  onChange={handleContactData}
                 />
 
-                <Button fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+                <Button
+                  onClick={handleNewContact}
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
                   Add
                 </Button>
               </Box>
