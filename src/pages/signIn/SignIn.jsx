@@ -15,7 +15,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 import { InputAdornment } from "@mui/material";
-
+import { useOutletContext } from "react-router-dom";
 // Storage
 
 import { getData } from "../../storage/Storage";
@@ -27,24 +27,13 @@ const regex = {
 };
 
 const userData = getData();
+export default function SignIn() {
+  const context = useOutletContext();
 
-export default function SignIn({
-  setIsUserLoggedIn,
-  setCurrentUser,
-  setAlertMessageData,
-  alertMessageData,
-}) {
   const navigate = useNavigate();
-
-  // const alertMessageBtnRef = React.useRef(null);
 
   const [showPassword, setShowPassword] = React.useState(false);
   const [userExists, setUserExists] = React.useState(true);
-
-  // const [alertMessage, setAlertMessage] = React.useState({
-  //   message: "",
-  //   type: "",
-  // });
 
   const [data, setData] = React.useState({
     email: "",
@@ -58,13 +47,6 @@ export default function SignIn({
 
   function handleData(e) {
     setData({ ...data, [e.target.name]: e.target.value });
-
-    if (e.target.value === "") {
-      setUserExists(true);
-    } else {
-      setUserExists(userData.some((user) => user.email === e.target.value));
-    }
-
     setHandleErrors({
       ...handleErrors,
       [e.target.name]:
@@ -76,33 +58,42 @@ export default function SignIn({
 
   function handleSignIn(event) {
     event.preventDefault();
-    const userData = getData().find((user) => user.email === data.email);
 
-    if (data?.email && data.password?.match(userData?.password) && userExists) {
-      setCurrentUser(userData);
-      sessionStorage.setItem("currentUser", JSON.stringify(userData));
+    const user = userData.find((user) => user.email === data.email);
 
-      setAlertMessageData({
-        message: "Signed Up Successfully!!",
-        type: "success",
-        ref: null,
-      });
-      navigate("/contactList");
-      setIsUserLoggedIn(true);
-    } else if (!data.password?.match(userData?.password)) {
-      setAlertMessageData({
-        message: "Incorrect Password.",
-        type: "error",
-        ref: null,
-      });
+    if (!!data.email && !!data.password) {
+      if (!user) {
+        context.setAlertMessageData({
+          message: "User doesn't exists",
+          type: "error",
+          ref: null,
+        });
+      } else if (data?.password !== user?.password) {
+        context.setAlertMessageData({
+          message: "Incorrect Password.",
+          type: "error",
+          ref: null,
+        });
+      } else {
+        context.setCurrentUser(user);
+        sessionStorage.setItem("currentUser", JSON.stringify(user));
+
+        context.setAlertMessageData({
+          message: "Signed Up Successfully!!",
+          type: "success",
+          ref: null,
+        });
+        navigate("/contactList");
+        context.setIsUserLoggedIn(true);
+      }
     } else {
-      setAlertMessageData({
+      context.setAlertMessageData({
         message: "Please fill all the fields",
         type: "warning",
         ref: null,
       });
     }
-    alertMessageData.ref?.current.click();
+    context.alertMessageData.ref?.current.click();
   }
 
   return (
@@ -137,11 +128,7 @@ export default function SignIn({
               value={data.email}
               onChange={handleData}
               error={handleErrors.email || !userExists}
-              helperText={
-                !userExists
-                  ? "User doesn't exists. Please Sign Up."
-                  : handleErrors.email && "Please enter a valid email"
-              }
+              helperText={handleErrors.email && "Please enter a valid email"}
             />
             <TextField
               margin="normal"

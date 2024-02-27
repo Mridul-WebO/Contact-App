@@ -15,16 +15,13 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 import { InputAdornment } from "@mui/material";
-import AlertMessage from "../../components/AlertMessage";
 
 // Storage
 
-import { addData, getData, setOnlineUsers } from "../../storage/Storage";
+import { addData, getData } from "../../storage/Storage";
+import getUniqueId from "./../../components/UniqueId";
 const defaultTheme = createTheme();
 
-function getUniqueId() {
-  return Math.floor(100000 + Math.random() * 900000);
-}
 const regex = {
   email: /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{1,5})$/,
   password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
@@ -44,11 +41,6 @@ export default function SignUp({
 
   const [showPassword, setShowPassword] = React.useState(false);
   const [userExists, setUserExists] = React.useState(false);
-
-  // const [alertMessage, setAlertMessage] = React.useState({
-  //   message: "",
-  //   type: "",
-  // });
 
   const [data, setData] = React.useState({
     userId: getUniqueId(),
@@ -220,7 +212,7 @@ export default function SignUp({
             <Grid container>
               <Grid item xs></Grid>
               <Grid item>
-                <Link to="/signIn" variant="body2">
+                <Link to="" variant="body2">
                   {"Already a user? Sign In"}
                 </Link>
               </Grid>

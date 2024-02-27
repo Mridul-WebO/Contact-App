@@ -143,6 +143,14 @@ export function removeCurrentUser() {
 export function addContactDetails(dataObj, userId) {
   try {
     const data = getData();
+
+    const currentUser = data.find((user) => user.userId === userId);
+    const currentUserIndex = data.findIndex((user) => user.userId === userId);
+    currentUser?.contacts.unshift(dataObj);
+    // currentUser?.contacts.splice(currentUser.length, 0, dataObj);
+    data.splice(currentUserIndex, 1, currentUser);
+
+    setter(data);
   } catch (error) {
     throw new Error(error);
   }

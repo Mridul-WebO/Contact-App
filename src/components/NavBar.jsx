@@ -8,9 +8,9 @@ const NavBar = ({ setIsUserLoggedIn, currentUser }) => {
   const navigate = useNavigate();
   function handleLogOut(event) {
     event.preventDefault();
-    setIsUserLoggedIn(false);
     removeCurrentUser();
-    navigate("/signIn");
+    setIsUserLoggedIn(false);
+    navigate("/");
   }
 
   //   const data = getSingleData(currentUser.userId);
@@ -20,7 +20,7 @@ const NavBar = ({ setIsUserLoggedIn, currentUser }) => {
     <div>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
-          <a className="navbar-brand" href="#">
+          <a className="navbar-brand" href="/">
             Contact App
           </a>
           <button
@@ -37,11 +37,15 @@ const NavBar = ({ setIsUserLoggedIn, currentUser }) => {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page">
+                <a className="nav-link active" aria-current="page" href="/">
                   Welcome!!{" "}
                   <span style={{ fontWeight: "bold" }}>
+                    {/* 
                     {currentUser?.email ||
-                      JSON.parse(sessionStorage.getItem("currentUser"))?.email}
+                      (sessionStorage.getItem("currentUser")
+                        ? JSON.parse(sessionStorage.getItem("currentUser"))
+                            ?.email
+                        : "")} */}
                   </span>
                 </a>
               </li>
