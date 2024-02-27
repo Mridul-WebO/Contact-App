@@ -9,6 +9,7 @@ import { Avatar, Box, Container, CssBaseline, TextField } from "@mui/material";
 import getUniqueId from "./UniqueId";
 import { addContactDetails } from "./../storage/Storage";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useRef } from "react";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -22,11 +23,14 @@ const regex = {
 export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
   const [open, setOpen] = React.useState(false);
 
+  const imageUploadBtnRef = useRef(null);
+
   const [userContact, setUserContact] = React.useState({
     userId: getUniqueId(),
     name: "",
     email: "",
     phoneNumber: "",
+    imageUrl: null,
   });
 
   const [helperTextMessage, setHelperTextMessage] = React.useState({
@@ -43,9 +47,6 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
 
   function handleContactData(e) {
     setUserContact({ ...userContact, [e.target.name]: e.target.value });
-
-    console.log(!!e.target.value.match(regex[e.target.name]));
-
     setHandleErrors({
       ...handleErrors,
       [e.target.name]:
@@ -72,6 +73,7 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
     } else {
       const userId = JSON.parse(sessionStorage.getItem("currentUser")).userId;
       setRows([userContact, ...rows]);
+      console.log(userContact);
       addContactDetails(userContact, userId);
       setOpen(false);
     }
@@ -88,6 +90,12 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
     setOpen(false);
     setHandleErrors({ name: false, email: false, phoneNumber: false });
   };
+
+  const handlePhotoUpload = (e) => {
+    setUserContact({ ...userContact, imageUrl: e.target.files[0] })
+  }
+
+  // console.log(userContact);
 
   return (
     <React.Fragment>
@@ -110,14 +118,18 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
                 alignItems: "center",
               }}
             >
+              <Avatar
+                style={{ cursor: "pointer" }}
+                sx={{ mx: 25, width: 75, height: 75 }}
+                alt=" Sharp"
+                src={userContact.imageUrl ? URL.createObjectURL(userContact.imageUrl) : ""}
+                onClick={() => imageUploadBtnRef.current.click()}
+              >
+                <CloudUploadIcon />
+                <input type="file" ref={imageUploadBtnRef} onChange={handlePhotoUpload} style={{ display: 'none' }} />
+              </Avatar>
               <Box component="form" noValidate sx={{ mt: 1 }}>
-                <Avatar
-                  style={{ cursor: "pointer" }}
-                  alt=" Sharp"
-                  src="/static/images/avatar/1.jpg"
-                >
-                  <CloudUploadIcon />
-                </Avatar>
+
                 <TextField
                   margin="normal"
                   required
@@ -179,6 +191,6 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </React.Fragment >
   );
 }

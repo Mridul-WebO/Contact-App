@@ -20,6 +20,7 @@ import { InputAdornment } from "@mui/material";
 
 import { addData, getData } from "../../storage/Storage";
 import getUniqueId from "./../../components/UniqueId";
+import { useOutletContext } from "react-router-dom";
 const defaultTheme = createTheme();
 
 const regex = {
@@ -29,13 +30,15 @@ const regex = {
 
 const userData = getData();
 
+
 export default function SignUp({
-  setIsUserLoggedIn,
-  setCurrentUser,
-  setAlertMessageData,
+
+
+
   alertMessageData,
 }) {
   const navigate = useNavigate();
+  const context = useOutletContext();
 
   // const alertMessageBtnRef = React.useRef(null);
 
@@ -79,7 +82,7 @@ export default function SignUp({
         contacts: [],
       });
 
-      setCurrentUser({
+      context.setCurrentUser({
         userId: data.userId,
         email: data.email,
         password: data.password,
@@ -96,23 +99,23 @@ export default function SignUp({
         })
       );
 
-      setAlertMessageData({
+      context.setAlertMessageData({
         message: "Signed Up Successfully!!",
         type: "success",
         ref: null,
       });
       setTimeout(() => {
-        setIsUserLoggedIn(true);
+        context.setIsUserLoggedIn(true);
         navigate("/contactList");
       }, 1000);
     } else {
-      setAlertMessageData({
+      context.setAlertMessageData({
         message: "Please fill all the fields.",
         type: "warning",
         ref: null,
       });
     }
-    alertMessageData.ref?.current.click();
+    context.alertMessageData.ref?.current.click();
   }
 
   return (
@@ -212,7 +215,7 @@ export default function SignUp({
             <Grid container>
               <Grid item xs></Grid>
               <Grid item>
-                <Link to="" variant="body2">
+                <Link to="/" variant="body2">
                   {"Already a user? Sign In"}
                 </Link>
               </Grid>
