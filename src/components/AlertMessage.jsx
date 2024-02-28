@@ -12,6 +12,7 @@ export default function AlertMessage({ alertMessageData }) {
 
   const ref = React.useRef(null);
   alertMessageData.ref = ref;
+
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;

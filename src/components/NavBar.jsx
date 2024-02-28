@@ -1,14 +1,26 @@
 import { useNavigate } from "react-router";
 import { fetchCurrentUser, removeCurrentUser } from "../storage/Storage";
 
-const NavBar = ({ setIsUserLoggedIn, currentUser }) => {
+const NavBar = ({
+  setIsUserLoggedIn,
+  setAlertMessageData,
+  alertMessageData,
+}) => {
   const navigate = useNavigate();
   function handleLogOut(event) {
     event.preventDefault();
 
+    // setAlertMessageData({
+    //   message: "Logged Out SuccessFully",
+    //   type: "Success",
+    //   ref: null,
+    // });
+    // console.log(alertMessageData.ref.current);
+
+    // alertMessageData.ref.current?.click();
+
     removeCurrentUser();
     setIsUserLoggedIn(false);
-
     navigate("/");
   }
 

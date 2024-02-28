@@ -18,12 +18,16 @@ function App() {
     ref: null,
   });
 
+  console.log(alertMessageData);
+
   return (
     <>
       {isUserLoggedIn && (
         <NavBar
           setIsUserLoggedIn={setIsUserLoggedIn}
           currentUser={currentUser}
+          setAlertMessageData={setAlertMessageData}
+          alertMessageData={alertMessageData}
         />
       )}
       <Outlet
@@ -35,7 +39,10 @@ function App() {
           setCurrentUser,
         }}
       />
-      <AlertMessage alertMessageData={alertMessageData} />
+      <AlertMessage
+        alertMessageData={alertMessageData}
+        setAlertMessageData={setAlertMessageData}
+      />
     </>
   );
 }
