@@ -27,14 +27,12 @@ const regex = {
   password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
 };
 
-const userData = getData();
 export default function SignIn() {
   const context = useOutletContext();
 
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = React.useState(false);
-  // const [userExists, setUserExists] = React.useState(true);
 
   const [data, setData] = React.useState({
     email: "",
@@ -60,7 +58,9 @@ export default function SignIn() {
   function handleSignIn(event) {
     event.preventDefault();
 
-    const user = userData.find((user) => user.email === data.email);
+    const user = getData().find((user) => user.email === data.email);
+
+    console.log({ user });
 
     if (!!data.email && !!data.password) {
       if (!user) {
@@ -69,7 +69,7 @@ export default function SignIn() {
           type: "error",
           ref: null,
         });
-      } else if (data?.password !== user?.password) {
+      } else if (data.password !== user.password) {
         context.setAlertMessageData({
           message: "Incorrect Password.",
           type: "error",
@@ -84,7 +84,7 @@ export default function SignIn() {
           type: "success",
           ref: null,
         });
-        navigate("/contactList");
+        navigate("/contact-list");
         context.setIsUserLoggedIn(true);
       }
     } else {
@@ -118,7 +118,6 @@ export default function SignIn() {
           </Typography>
           <Box sx={{ mt: 1 }}>
             <TextField
-              // helperText={"Please enter your email"}
               margin="normal"
               required
               fullWidth
@@ -175,7 +174,7 @@ export default function SignIn() {
             <Grid container>
               <Grid item xs></Grid>
               <Grid item>
-                <Link to="/signUp" variant="body2">
+                <Link to="/sign-up" variant="body2">
                   {"Don't have an account?? Sign Up"}
                 </Link>
               </Grid>

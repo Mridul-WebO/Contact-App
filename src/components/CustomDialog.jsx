@@ -68,7 +68,7 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
       setHandleErrors({ ...handleErrors, phoneNumber: true });
       setHelperTextMessage({
         ...helperTextMessage,
-        phoneNumber: "Invalid phone number",
+        phoneNumber: "Phone Number should be of 10 digits only",
       });
     } else {
       const userId = fetchCurrentUser().userId;

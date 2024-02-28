@@ -28,13 +28,9 @@ const regex = {
   password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
 };
 
-const userData = getData();
-
-export default function SignUp({ alertMessageData }) {
+export default function SignUp() {
   const navigate = useNavigate();
   const context = useOutletContext();
-
-  // const alertMessageBtnRef = React.useRef(null);
 
   const [showPassword, setShowPassword] = React.useState(false);
   const [userExists, setUserExists] = React.useState(false);
@@ -54,7 +50,8 @@ export default function SignUp({ alertMessageData }) {
 
   function handleData(e) {
     setData({ ...data, [e.target.name]: e.target.value });
-    setUserExists(userData.some((user) => user.email === e.target.value));
+
+    setUserExists(getData().some((user) => user.email === e.target.value));
 
     setHandleErrors({
       ...handleErrors,
@@ -105,7 +102,7 @@ export default function SignUp({ alertMessageData }) {
         });
 
         context.setIsUserLoggedIn(true);
-        navigate("/contactList");
+        navigate("/contact-list");
       }
     } else {
       context.setAlertMessageData({
@@ -168,7 +165,8 @@ export default function SignUp({ alertMessageData }) {
               onChange={handleData}
               error={handleErrors.password}
               helperText={
-                handleErrors.password && "Please enter a Valid password"
+                handleErrors.password &&
+                "password must contains  One UpperCase letter, One lowerCase letter and should be of atleast 8 characters "
               }
               InputProps={{
                 endAdornment: (

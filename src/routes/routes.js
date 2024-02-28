@@ -20,7 +20,7 @@ const router = createBrowserRouter([
             element: <SignIn />,
           },
           {
-            path: "signUp",
+            path: "sign-up",
             element: <SignUp />,
           },
         ],
@@ -29,7 +29,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           {
-            path: "contactList",
+            path: "contact-list",
             element: <ContactList />,
           },
         ],

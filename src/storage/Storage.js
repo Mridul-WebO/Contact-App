@@ -137,6 +137,21 @@ export function fetchCurrentUser() {
   }
 }
 
+// will give contact details of current user
+export function fetchContactsDetails() {
+  try {
+    const currentUser = fetchCurrentUser();
+    const { userId } = currentUser;
+
+    const userDetail = getSingleData(userId);
+    const contactDetails = userDetail.contacts;
+
+    return contactDetails;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 export function addContactDetails(dataObj, userId) {
   try {
     const data = getData();

@@ -18,8 +18,6 @@ function App() {
     ref: null,
   });
 
-  console.log(alertMessageData);
-
   return (
     <>
       {isUserLoggedIn && (

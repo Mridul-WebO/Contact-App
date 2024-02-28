@@ -4,7 +4,7 @@ function Authenticate() {
   const context = useOutletContext();
 
   if (!!sessionStorage.getItem("currentUser")) {
-    return <Navigate to="/contactList" />;
+    return <Navigate to="/contact-list" />;
   }
 
   return <Outlet context={context} />;
