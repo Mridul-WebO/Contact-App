@@ -5,6 +5,7 @@ import SignUp from "./../pages/signUp/SignUp";
 import ProtectedRoute from "./../components/ProtectedRoute";
 import ContactList from "./../pages/contactList/ContactList";
 import Authenticate from "./../components/Authenticate";
+import ErrorPage from "../pages/errorPage/ErrorPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,11 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+
+  {
+    path: "*",
+    element: <ErrorPage />,
   },
 ]);
 

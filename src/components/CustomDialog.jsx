@@ -7,7 +7,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import { Avatar, Box, Container, CssBaseline, TextField } from "@mui/material";
 import getUniqueId from "./UniqueId";
-import { addContactDetails } from "./../storage/Storage";
+import { addContactDetails, fetchCurrentUser } from "./../storage/Storage";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useRef } from "react";
 
@@ -30,7 +30,7 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
     name: "",
     email: "",
     phoneNumber: "",
-    imageUrl: null,
+    imageUrl: "",
   });
 
   const [helperTextMessage, setHelperTextMessage] = React.useState({
@@ -71,10 +71,11 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
         phoneNumber: "Invalid phone number",
       });
     } else {
-      const userId = JSON.parse(sessionStorage.getItem("currentUser")).userId;
+      const userId = fetchCurrentUser().userId;
+
       setRows([userContact, ...rows]);
-      console.log(userContact);
       addContactDetails(userContact, userId);
+
       setOpen(false);
     }
   }
@@ -84,6 +85,7 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
     userContact.name = "";
     userContact.email = "";
     userContact.phoneNumber = "";
+    userContact.imageUrl = null;
   };
 
   const handleClose = () => {
@@ -92,10 +94,14 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
   };
 
   const handlePhotoUpload = (e) => {
-    setUserContact({ ...userContact, imageUrl: e.target.files[0] })
-  }
+    const reader = new FileReader();
 
-  // console.log(userContact);
+    reader.readAsDataURL(e.target.files[0]);
+
+    reader.addEventListener("load", () => {
+      setUserContact({ ...userContact, imageUrl: reader.result });
+    });
+  };
 
   return (
     <React.Fragment>
@@ -122,14 +128,18 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
                 style={{ cursor: "pointer" }}
                 sx={{ mx: 25, width: 75, height: 75 }}
                 alt=" Sharp"
-                src={userContact.imageUrl ? URL.createObjectURL(userContact.imageUrl) : ""}
-                onClick={() => imageUploadBtnRef.current.click()}
+                src={userContact.imageUrl}
+                onClick={() => imageUploadBtnRef.current?.click()}
               >
                 <CloudUploadIcon />
-                <input type="file" ref={imageUploadBtnRef} onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                <input
+                  type="file"
+                  ref={imageUploadBtnRef}
+                  onChange={handlePhotoUpload}
+                  style={{ display: "none" }}
+                />
               </Avatar>
               <Box component="form" noValidate sx={{ mt: 1 }}>
-
                 <TextField
                   margin="normal"
                   required
@@ -191,6 +201,6 @@ export default function CustomDialog({ addContactBtnRef, rows, setRows }) {
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
-    </React.Fragment >
+    </React.Fragment>
   );
 }

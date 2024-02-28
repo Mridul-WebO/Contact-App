@@ -9,8 +9,6 @@ import { Avatar, Container, Fab } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CustomDialog from "./CustomDialog";
 import { getSingleData } from "../storage/Storage";
-
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 
@@ -76,13 +74,12 @@ export default function BasicTable() {
             {rows.map((row) => (
               <StyledTableRow key={row.userId}>
                 <StyledTableCell component="th" scope="row">
-                  {" "}
                   <Avatar
                     style={{ cursor: "pointer" }}
                     alt=" Sharp"
-                    src="/static/images/avatar/1.jpg"
+                    src={row?.imageUrl}
                   >
-                    <CloudUploadIcon />
+                    {!row.imageURL && row.email.slice(0, 1).toUpperCase()}
                   </Avatar>
                 </StyledTableCell>
                 <StyledTableCell align="center">{row.userId}</StyledTableCell>

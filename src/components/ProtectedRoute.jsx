@@ -1,18 +1,11 @@
-import { useEffect } from "react";
-import { Outlet, useNavigate, useOutletContext } from "react-router-dom";
+import { Navigate, Outlet, useOutletContext } from "react-router-dom";
 
 function ProtectedRoute() {
-  const navigate = useNavigate();
   const context = useOutletContext();
 
-
-  // useEffect(() => {
-  if (!context.isUserLoggedIn || !sessionStorage.getItem("currentUser")) {
-    navigate("/");
+  if (!sessionStorage.getItem("currentUser")) {
+    return <Navigate to="/" />;
   }
-
-  // }, [])
-
 
   return <Outlet context={context} />;
 }

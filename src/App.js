@@ -7,7 +7,10 @@ import { useState } from "react";
 import AlertMessage from "./components/AlertMessage";
 
 function App() {
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(
+    !!sessionStorage.getItem("currentUser")
+  );
+
   const [currentUser, setCurrentUser] = useState({});
   const [alertMessageData, setAlertMessageData] = useState({
     message: "",
@@ -17,7 +20,7 @@ function App() {
 
   return (
     <>
-      {(isUserLoggedIn || sessionStorage.getItem("currentUser")) && (
+      {isUserLoggedIn && (
         <NavBar
           setIsUserLoggedIn={setIsUserLoggedIn}
           currentUser={currentUser}

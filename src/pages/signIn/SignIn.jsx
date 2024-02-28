@@ -16,6 +16,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 import { InputAdornment } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
+import "./SignIn.css";
 // Storage
 
 import { getData } from "../../storage/Storage";
@@ -33,7 +34,7 @@ export default function SignIn() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = React.useState(false);
-  const [userExists, setUserExists] = React.useState(true);
+  // const [userExists, setUserExists] = React.useState(true);
 
   const [data, setData] = React.useState({
     email: "",
@@ -107,6 +108,7 @@ export default function SignIn() {
             flexDirection: "column",
             alignItems: "center",
           }}
+          className="signInContainer"
         >
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
@@ -127,7 +129,7 @@ export default function SignIn() {
               autoFocus
               value={data.email}
               onChange={handleData}
-              error={handleErrors.email || !userExists}
+              error={handleErrors.email}
               helperText={handleErrors.email && "Please enter a valid email"}
             />
             <TextField

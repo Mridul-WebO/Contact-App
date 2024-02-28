@@ -15,7 +15,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 import { InputAdornment } from "@mui/material";
-
+import "./SignUp.css";
 // Storage
 
 import { addData, getData } from "../../storage/Storage";
@@ -30,13 +30,7 @@ const regex = {
 
 const userData = getData();
 
-
-export default function SignUp({
-
-
-
-  alertMessageData,
-}) {
+export default function SignUp({ alertMessageData }) {
   const navigate = useNavigate();
   const context = useOutletContext();
 
@@ -75,39 +69,44 @@ export default function SignUp({
     event.preventDefault();
 
     if (data.email && data.password && data.confirmPassword && !userExists) {
-      addData({
-        userId: data.userId,
-        email: data.email,
-        password: data.password,
-        contacts: [],
-      });
-
-      context.setCurrentUser({
-        userId: data.userId,
-        email: data.email,
-        password: data.password,
-        contacts: [],
-      });
-
-      // setOnlineUsers(data.userId);
-      sessionStorage.setItem(
-        "currentUser",
-        JSON.stringify({
+      if (data.confirmPassword !== data.password) {
+        context.setAlertMessageData({
+          message: "Passwords doesn't match",
+          type: "warning",
+          ref: null,
+        });
+      } else {
+        addData({
           userId: data.userId,
           email: data.email,
           password: data.password,
-        })
-      );
+          contacts: [],
+        });
 
-      context.setAlertMessageData({
-        message: "Signed Up Successfully!!",
-        type: "success",
-        ref: null,
-      });
-      setTimeout(() => {
+        context.setCurrentUser({
+          userId: data.userId,
+          email: data.email,
+          password: data.password,
+          contacts: [],
+        });
+        sessionStorage.setItem(
+          "currentUser",
+          JSON.stringify({
+            userId: data.userId,
+            email: data.email,
+            password: data.password,
+          })
+        );
+
+        context.setAlertMessageData({
+          message: "Signed Up Successfully!!",
+          type: "success",
+          ref: null,
+        });
+
         context.setIsUserLoggedIn(true);
         navigate("/contactList");
-      }, 1000);
+      }
     } else {
       context.setAlertMessageData({
         message: "Please fill all the fields.",
@@ -129,6 +128,7 @@ export default function SignUp({
             flexDirection: "column",
             alignItems: "center",
           }}
+          className="signUpContainer"
         >
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
@@ -138,7 +138,6 @@ export default function SignUp({
           </Typography>
           <Box component="form" sx={{ mt: 1 }}>
             <TextField
-              // helperText={"Please enter your email"}
               margin="normal"
               required
               fullWidth

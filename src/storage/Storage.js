@@ -120,18 +120,6 @@ export function addData(dataObj) {
   }
 }
 
-// export function setOnlineUsers(userId) {
-//   try {
-//     const data = [
-//       ...(JSON.parse(localStorage.getItem("usersOnline")) || []),
-//       userId,
-//     ];
-//     localStorage.setItem("usersOnline", JSON.stringify(data));
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// }
-
 export function removeCurrentUser() {
   try {
     sessionStorage.removeItem("currentUser");
@@ -140,14 +128,23 @@ export function removeCurrentUser() {
   }
 }
 
+export function fetchCurrentUser() {
+  try {
+    const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+    return currentUser;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 export function addContactDetails(dataObj, userId) {
   try {
     const data = getData();
-    console.log(dataObj);
+
     const currentUser = data.find((user) => user.userId === userId);
     const currentUserIndex = data.findIndex((user) => user.userId === userId);
+
     currentUser?.contacts.unshift(dataObj);
-    // currentUser?.contacts.splice(currentUser.length, 0, dataObj);
     data.splice(currentUserIndex, 1, currentUser);
 
     setter(data);

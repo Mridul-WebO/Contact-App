@@ -1,20 +1,18 @@
-import React from "react";
 import { useNavigate } from "react-router";
-import { removeCurrentUser } from "../storage/Storage";
-
-// storage
+import { fetchCurrentUser, removeCurrentUser } from "../storage/Storage";
 
 const NavBar = ({ setIsUserLoggedIn, currentUser }) => {
   const navigate = useNavigate();
   function handleLogOut(event) {
     event.preventDefault();
+
     removeCurrentUser();
     setIsUserLoggedIn(false);
+
     navigate("/");
   }
 
-  //   const data = getSingleData(currentUser.userId);
-  //   console.log(currentUser);
+  const userName = fetchCurrentUser()?.email.split("@")[0];
 
   return (
     <div>
@@ -40,12 +38,7 @@ const NavBar = ({ setIsUserLoggedIn, currentUser }) => {
                 <a className="nav-link active" aria-current="page" href="/">
                   Welcome!!{" "}
                   <span style={{ fontWeight: "bold" }}>
-                    {/* 
-                    {currentUser?.email ||
-                      (sessionStorage.getItem("currentUser")
-                        ? JSON.parse(sessionStorage.getItem("currentUser"))
-                            ?.email
-                        : "")} */}
+                    {userName || "User"}
                   </span>
                 </a>
               </li>
