@@ -11,9 +11,12 @@ import CustomDialog from "./CustomDialog";
 import { fetchContactsDetails, fetchCurrentUser } from "../storage/Storage";
 import { styled } from "@mui/material/styles";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-// import { read, writeFileXLSX, utils } from "xlsx";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import exportFromJSON from "export-from-json";
 
-import { csv2json, json2csv } from "json-2-csv";
+import Papa from "papaparse";
+import { useOutletContext } from "react-router-dom";
 // import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -35,49 +38,70 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
-function handleAddContact(addContactBtnRef) {
-  addContactBtnRef.current.click();
+
+function handleEditRow() {
+  console.log("Edit Row");
 }
 
-function convertToCSV(json) {
-  const fields = Object.keys(json[0]); // get the headers from the first object in the array
-  const csv = json2csv({ data: json, fields }); // convert the JSON to CSV using the json2csv package
-  return csv;
+function handleDeleteRow() {
+  console.log("Delete Row");
 }
 
 function handleExportContacts() {
-  console.log("Export");
+  const data = fetchContactsDetails();
 
-  // const contactDetailsArr = fetchContactsDetails();
+  const fileName = "Contact-List";
+  const exportType = exportFromJSON.types.csv;
 
-  // const csv = convertToCSV(fetchContactsDetails());
-  // const blob = new Blob([csv], { type: "text/csv" });
-  // const url = window.URL.createObjectURL(blob);
-  // const a = document.createElement("a");
-  // a.href = url;
-  // a.download = "data.csv";
-  // document.body.appendChild(a);
-  // a.click();
-  // document.body.removeChild(a);
+  exportFromJSON({ data, fileName, exportType });
 }
 
-function handleImportContacts(event) {
-  console.log("Import");
+function handleImportContacts(event, context, rows, setRows) {
+  const existingContacts = fetchContactsDetails();
 
-  // const csvFile = csv2json(event.target.files[0]);
+  const file = event.target.files[0];
+
+  Papa.parse(file, {
+    header: true,
+    complete: (res) => {
+      if (res.data) {
+        const newContacts = res.data.filter((newContact) => {
+          return !existingContacts.some((oldContact) => {
+            return parseInt(newContact.userId) === parseInt(oldContact.userId);
+          });
+        });
+
+        setRows([...newContacts, ...rows]);
+        console.log(newContacts);
+
+        context.setAlertMessageData({
+          message: "Contacts imported successfully!!",
+          type: "success",
+          hideDuration: 3000,
+          ref: null,
+        });
+      } else {
+        context.setAlertMessageData({
+          message: "Couldn't export data. Please try again after sometime",
+          type: "error",
+          ref: null,
+        });
+      }
+      context.alertMessageData.ref?.current.click();
+    },
+  });
 
   // console.log(csvFile);
 }
 
 export default function BasicTable() {
   const contacts = fetchContactsDetails();
+  const context = useOutletContext();
 
   const [rows, setRows] = React.useState(contacts);
 
   const addContactBtnRef = React.useRef(null);
   const importRef = React.useRef(null);
-  const exportRef = React.useRef(null);
-  console.log("rows", rows);
 
   const userName = fetchCurrentUser()?.email.split("@")[0];
 
@@ -95,15 +119,9 @@ export default function BasicTable() {
           color="primary"
           aria-label="add"
           sx={{ my: 1 }}
-          onClick={() => exportRef.current.click()}
+          onClick={handleExportContacts}
         >
-          <Typography sx={{ fontSize: 10 }}>Export CSV</Typography>
-          <input
-            type="file"
-            style={{ display: "none" }}
-            ref={exportRef}
-            onChange={(event) => handleExportContacts(event)}
-          />
+          <Typography sx={{ fontSize: 10 }}>Export data</Typography>
         </Fab>
         <Fab
           color="primary"
@@ -111,19 +129,21 @@ export default function BasicTable() {
           sx={{ my: 1, mx: 1 }}
           onClick={() => importRef.current.click()}
         >
-          <Typography sx={{ fontSize: 10 }}>Import CSV</Typography>
+          <Typography sx={{ fontSize: 10 }}>Import data</Typography>
           <input
             type="file"
             style={{ display: "none" }}
             ref={importRef}
-            onChange={(event) => handleImportContacts(event)}
+            onChange={(event) =>
+              handleImportContacts(event, context, rows, setRows)
+            }
           />
         </Fab>
         <Fab
           color="primary"
           aria-label="add"
           sx={{ my: 1 }}
-          onClick={() => handleAddContact(addContactBtnRef)}
+          onClick={() => addContactBtnRef.current.click()}
         >
           <AddIcon />
         </Fab>
@@ -137,6 +157,7 @@ export default function BasicTable() {
                 <StyledTableCell align="center">Name</StyledTableCell>
                 <StyledTableCell align="center">Email</StyledTableCell>
                 <StyledTableCell align="center">Phone Number</StyledTableCell>
+                <StyledTableCell align="center">Actions</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -148,7 +169,7 @@ export default function BasicTable() {
                       alt=" Sharp"
                       src={row?.imageUrl}
                     >
-                      {!row.imageURL && row.email.slice(0, 1).toUpperCase()}
+                      {!row.imageURL && row.email?.slice(0, 1).toUpperCase()}
                     </Avatar>
                   </StyledTableCell>
                   <StyledTableCell align="center">{row.userId}</StyledTableCell>
@@ -156,6 +177,16 @@ export default function BasicTable() {
                   <StyledTableCell align="center">{row.email}</StyledTableCell>
                   <StyledTableCell align="center">
                     {row.phoneNumber}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    <EditIcon
+                      style={{ cursor: "pointer" }}
+                      onClick={handleEditRow}
+                    />
+                    <DeleteIcon
+                      style={{ cursor: "pointer" }}
+                      onClick={handleDeleteRow}
+                    />
                   </StyledTableCell>
                 </StyledTableRow>
               ))}

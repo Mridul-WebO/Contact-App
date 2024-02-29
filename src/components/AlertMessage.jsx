@@ -28,7 +28,7 @@ export default function AlertMessage({ alertMessageData }) {
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={open}
         onClose={handleClose}
-        autoHideDuration={1000}
+        autoHideDuration={alertMessageData.hideDuration || 2000}
       >
         <Alert
           onClose={handleClose}

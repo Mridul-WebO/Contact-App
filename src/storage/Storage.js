@@ -1,20 +1,5 @@
 // create methods to perform operations like save/edit/delete/add data
 
-/*
-
- userData =[
-    {
-        userId: unique id,
-        name:'',
-        phoneNumber:'',
-        password:'',
-        image: link/url
-    },
-    
- ] 
-
-*/
-
 const storageId = "userData";
 /**
  * Set updated data in localStorage.

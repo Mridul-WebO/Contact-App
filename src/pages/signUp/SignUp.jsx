@@ -32,6 +32,8 @@ export default function SignUp() {
   const navigate = useNavigate();
   const context = useOutletContext();
 
+  const signUpBtnRef = React.useRef(null);
+
   const [showPassword, setShowPassword] = React.useState(false);
   const [userExists, setUserExists] = React.useState(false);
 
@@ -61,6 +63,12 @@ export default function SignUp() {
           : !e.target.value.match(regex[e.target.name]),
     });
   }
+
+  document.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      signUpBtnRef.current?.click();
+    }
+  });
 
   function handleSignUp(event) {
     event.preventDefault();
@@ -205,6 +213,7 @@ export default function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              ref={signUpBtnRef}
               onClick={handleSignUp}
             >
               Sign Up

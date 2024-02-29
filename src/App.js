@@ -15,6 +15,7 @@ function App() {
   const [alertMessageData, setAlertMessageData] = useState({
     message: "",
     type: "",
+    hideDuration: null,
     ref: null,
   });
 

@@ -29,7 +29,7 @@ const regex = {
 
 export default function SignIn() {
   const context = useOutletContext();
-
+  const signInBtnRef = React.useRef(null);
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = React.useState(false);
@@ -55,12 +55,16 @@ export default function SignIn() {
     });
   }
 
+  document.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      signInBtnRef.current?.click();
+    }
+  });
+
   function handleSignIn(event) {
     event.preventDefault();
 
     const user = getData().find((user) => user.email === data.email);
-
-    console.log({ user });
 
     if (!!data.email && !!data.password) {
       if (!user) {
@@ -167,6 +171,7 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              ref={signInBtnRef}
               onClick={handleSignIn}
             >
               Sign In
