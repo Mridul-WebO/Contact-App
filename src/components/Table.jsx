@@ -8,7 +8,14 @@ import Paper from "@mui/material/Paper";
 import { Avatar, Container, Fab, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CustomDialog from "./CustomDialog";
-import { fetchContactsDetails, fetchCurrentUser } from "../storage/Storage";
+import {
+  addContactDetails,
+  addImportedContactDetails,
+  deleteContact,
+  fetchContactsDetails,
+} from "../storage/Storage";
+
+import Tooltip from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -39,12 +46,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function handleEditRow() {
-  console.log("Edit Row");
+function handleEditRow(row, setCurrentRow, setOpen) {
+  setCurrentRow(row);
+  setOpen(true);
 }
 
-function handleDeleteRow() {
-  console.log("Delete Row");
+function handleDeleteRow(userId, contacts, setRows) {
+  const updatedContacts = contacts.filter(
+    (contact) => parseInt(contact.userId) !== userId
+  );
+  setRows(updatedContacts);
+  deleteContact(updatedContacts);
 }
 
 function handleExportContacts() {
@@ -67,12 +79,14 @@ function handleImportContacts(event, context, rows, setRows) {
       if (res.data) {
         const newContacts = res.data.filter((newContact) => {
           return !existingContacts.some((oldContact) => {
+            console.log(newContact.userId, oldContact.userId);
             return parseInt(newContact.userId) === parseInt(oldContact.userId);
           });
         });
 
         setRows([...newContacts, ...rows]);
-        console.log(newContacts);
+
+        addImportedContactDetails(newContacts);
 
         context.setAlertMessageData({
           message: "Contacts imported successfully!!",
@@ -90,27 +104,45 @@ function handleImportContacts(event, context, rows, setRows) {
       context.alertMessageData.ref?.current.click();
     },
   });
-
-  // console.log(csvFile);
 }
 
 export default function BasicTable() {
+  const importRef = React.useRef(null);
   const contacts = fetchContactsDetails();
   const context = useOutletContext();
 
   const [rows, setRows] = React.useState(contacts);
+  const [currentRow, setCurrentRow] = React.useState({});
+  const [open, setOpen] = React.useState(false);
 
-  const addContactBtnRef = React.useRef(null);
-  const importRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!open) {
+      setCurrentRow({
+        userId: "",
+        name: "",
+        email: "",
+        phoneNumber: "",
+        imageUrl: "",
+      });
+    }
+  }, [open]);
 
-  const userName = fetchCurrentUser()?.email.split("@")[0];
+  const onSubmit = (submittedData) => {
+    setRows([submittedData, ...rows]);
+    addContactDetails(submittedData);
+    setOpen(false);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
 
   return (
     <>
       <div className="container">
         <div className="row my-4">
           <div className="col">
-            <h4>Welcome!! {userName} </h4>
+            <h4>Welcome!! {context.userName} </h4>
           </div>
         </div>
       </div>
@@ -127,7 +159,7 @@ export default function BasicTable() {
           color="primary"
           aria-label="add"
           sx={{ my: 1, mx: 1 }}
-          onClick={() => importRef.current.click()}
+          onClick={() => importRef.current?.click()}
         >
           <Typography sx={{ fontSize: 10 }}>Import data</Typography>
           <input
@@ -143,7 +175,7 @@ export default function BasicTable() {
           color="primary"
           aria-label="add"
           sx={{ my: 1 }}
-          onClick={() => addContactBtnRef.current.click()}
+          onClick={() => setOpen(true)}
         >
           <AddIcon />
         </Fab>
@@ -162,7 +194,7 @@ export default function BasicTable() {
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <StyledTableRow key={row.userId}>
+                <StyledTableRow key={parseInt(row.userId)}>
                   <StyledTableCell component="th" scope="row">
                     <Avatar
                       style={{ cursor: "pointer" }}
@@ -179,25 +211,42 @@ export default function BasicTable() {
                     {row.phoneNumber}
                   </StyledTableCell>
                   <StyledTableCell align="center">
-                    <EditIcon
-                      style={{ cursor: "pointer" }}
-                      onClick={handleEditRow}
-                    />
-                    <DeleteIcon
-                      style={{ cursor: "pointer" }}
-                      onClick={handleDeleteRow}
-                    />
+                    <Tooltip title="Edit">
+                      <EditIcon
+                        sx={{ mx: 2 }}
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          handleEditRow(row, setCurrentRow, setOpen)
+                        }
+                      />
+                    </Tooltip>
+
+                    <Tooltip title="Delete">
+                      <DeleteIcon
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          handleDeleteRow(
+                            parseInt(row.userId),
+                            contacts,
+                            setRows
+                          )
+                        }
+                      />
+                    </Tooltip>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
-        <CustomDialog
-          addContactBtnRef={addContactBtnRef}
-          rows={rows}
-          setRows={setRows}
-        />
+        {open && (
+          <CustomDialog
+            open={open}
+            data={currentRow}
+            onSubmit={onSubmit}
+            onClose={onClose}
+          />
+        )}
       </Container>
     </>
   );

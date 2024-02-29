@@ -137,15 +137,44 @@ export function fetchContactsDetails() {
   }
 }
 
-export function addContactDetails(dataObj, userId) {
+export function addContactDetails(dataObj) {
   try {
     const data = getData();
+    const { userId } = fetchCurrentUser();
 
     const currentUser = data.find((user) => user.userId === userId);
     const currentUserIndex = data.findIndex((user) => user.userId === userId);
 
     currentUser?.contacts.unshift(dataObj);
     data.splice(currentUserIndex, 1, currentUser);
+
+    setter(data);
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export function addImportedContactDetails(dataArr) {
+  try {
+    const data = getData();
+    const { userId } = fetchCurrentUser();
+    const currentUser = data.find((user) => user.userId === userId);
+
+    currentUser.contacts = [...dataArr, ...currentUser.contacts];
+
+    setter(data);
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export function deleteContact(contactsArr) {
+  try {
+    const data = getData();
+    const { userId } = fetchCurrentUser();
+    const currentUser = data.find((user) => user.userId === userId);
+
+    currentUser.contacts = contactsArr;
 
     setter(data);
   } catch (error) {

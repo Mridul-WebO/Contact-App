@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import { useState } from "react";
 import AlertMessage from "./components/AlertMessage";
+import { fetchCurrentUser } from "./storage/Storage";
 
 function App() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(
@@ -18,6 +19,8 @@ function App() {
     hideDuration: null,
     ref: null,
   });
+
+  const userName = fetchCurrentUser()?.email.split("@")[0];
 
   return (
     <>
@@ -36,6 +39,7 @@ function App() {
           isUserLoggedIn,
           setIsUserLoggedIn,
           setCurrentUser,
+          userName,
         }}
       />
       <AlertMessage
