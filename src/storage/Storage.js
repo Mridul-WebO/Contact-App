@@ -149,6 +149,8 @@ export function addContactDetails(dataObj) {
     data.splice(currentUserIndex, 1, currentUser);
 
     setter(data);
+    return true;
+
   } catch (error) {
     throw new Error(error);
   }
@@ -163,6 +165,8 @@ export function addImportedContactDetails(dataArr) {
     currentUser.contacts = [...dataArr, ...currentUser.contacts];
 
     setter(data);
+    return true;
+
   } catch (error) {
     throw new Error(error);
   }
@@ -177,6 +181,27 @@ export function deleteContact(contactsArr) {
     currentUser.contacts = contactsArr;
 
     setter(data);
+    return true;
+
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+
+export function editContact(dataObj) {
+  try {
+
+    const data = getData();
+    const { userId } = fetchCurrentUser();
+    const { contacts } = data.find((user) => user.userId === userId);
+    const rowIndex = contacts.findIndex(
+      (contact) => contact.userId === dataObj.userId
+    );
+    contacts.splice(rowIndex, 1, dataObj);
+
+    setter(data);
+    return true;
   } catch (error) {
     throw new Error(error);
   }

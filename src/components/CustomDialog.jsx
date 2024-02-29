@@ -22,7 +22,7 @@ const regex = {
 export default function CustomDialog({ open, data, onSubmit, onClose }) {
   const imageUploadBtnRef = useRef(null);
 
-  const [userContact, setUserContact] = React.useState({
+  const [userContact, setUserContact] = React.useState((data.userId !== '' && data) || {
     userId: getUniqueId(),
     name: "",
     email: "",
@@ -30,14 +30,12 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
     imageUrl: "",
   });
 
-  React.useEffect(() => {
-    setUserContact({ ...data });
-  }, [data]);
+
 
   const [helperTextMessage, setHelperTextMessage] = React.useState({
     name: "Name is required",
     email: "Email is required",
-    phoneNumber: "Phone Number  is required",
+    phoneNumber: "Phone Number is required",
   });
 
   const [handleErrors, setHandleErrors] = React.useState({
@@ -78,7 +76,6 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
 
   const handlePhotoUpload = (e) => {
     const reader = new FileReader();
-
     reader.readAsDataURL(e.target.files[0]);
 
     reader.addEventListener("load", () => {
@@ -95,7 +92,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
         onClose={onClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>{"Add new contact"}</DialogTitle>
+        <DialogTitle>{data.userId === "" ? "Add new contact" : "Update contact"}</DialogTitle>
         <DialogContent>
           <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -111,16 +108,16 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                 sx={{ mx: 25, width: 75, height: 75 }}
                 alt=" Sharp"
                 src={userContact?.imageUrl}
-                onClick={() => imageUploadBtnRef.current?.click()}
+                onClick={() => { imageUploadBtnRef.current?.click() }}
               >
                 <CloudUploadIcon />
-                <input
-                  type="file"
-                  ref={imageUploadBtnRef}
-                  onChange={handlePhotoUpload}
-                  style={{ display: "none" }}
-                />
               </Avatar>
+              <input
+                type="file"
+                ref={imageUploadBtnRef}
+                onChange={handlePhotoUpload}
+                style={{ display: "none" }}
+              />
               <Box component="form" noValidate sx={{ mt: 1 }}>
                 <TextField
                   margin="normal"

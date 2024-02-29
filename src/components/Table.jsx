@@ -12,6 +12,7 @@ import {
   addContactDetails,
   addImportedContactDetails,
   deleteContact,
+  editContact,
   fetchContactsDetails,
 } from "../storage/Storage";
 
@@ -24,7 +25,7 @@ import exportFromJSON from "export-from-json";
 
 import Papa from "papaparse";
 import { useOutletContext } from "react-router-dom";
-// import FileUploadIcon from "@mui/icons-material/FileUpload";
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -116,6 +117,7 @@ export default function BasicTable() {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
+
     if (!open) {
       setCurrentRow({
         userId: "",
@@ -124,12 +126,34 @@ export default function BasicTable() {
         phoneNumber: "",
         imageUrl: "",
       });
+
     }
   }, [open]);
 
   const onSubmit = (submittedData) => {
-    setRows([submittedData, ...rows]);
-    addContactDetails(submittedData);
+
+
+    const contacts = fetchContactsDetails();
+    const contactExits = contacts.some((contact) => contact.userId === submittedData.userId);
+
+    if (!contactExits) {
+      setRows([submittedData, ...rows]);
+      addContactDetails(submittedData);
+
+    } else {
+      const data = rows.map((row) => {
+        if (row.userId === submittedData.userId) {
+          return submittedData;
+        }
+        return row;
+      }
+      );
+      setRows([...data]);
+      editContact(submittedData)
+    }
+
+
+
     setOpen(false);
   };
 
@@ -201,6 +225,8 @@ export default function BasicTable() {
                       alt=" Sharp"
                       src={row?.imageUrl}
                     >
+
+
                       {!row.imageURL && row.email?.slice(0, 1).toUpperCase()}
                     </Avatar>
                   </StyledTableCell>
