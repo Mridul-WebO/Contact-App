@@ -63,12 +63,10 @@ function handleDeleteRow(userId, contacts, setRows, context) {
     hideDuration: 2000,
     open: true,
   });
-  console.log(context);
 }
 
 function handleExportContacts() {
   const data = fetchContactsDetails();
-
   const fileName = "Contact-List";
   const exportType = exportFromJSON.types.csv;
 

@@ -14,17 +14,12 @@ import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { InputAdornment } from "@mui/material";
+import { Alert, InputAdornment } from "@mui/material";
 import { addData, getData, setCurrentUser } from "../../storage/Storage";
 import getUniqueId from "./../../components/UniqueId";
 import { useOutletContext } from "react-router-dom";
-
+import { regex } from "../../components/regex";
 const defaultTheme = createTheme();
-
-const regex = {
-  email: /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{1,5})$/,
-  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
-};
 
 export default function SignUp() {
   const signUpBtnRef = React.useRef(null);
@@ -32,7 +27,7 @@ export default function SignUp() {
   const context = useOutletContext();
 
   const [showPassword, setShowPassword] = React.useState(false);
-  const [userExists, setUserExists] = React.useState(false);
+
   const [data, setData] = React.useState({
     userId: getUniqueId(),
     email: "",
@@ -45,16 +40,29 @@ export default function SignUp() {
     confirmPassword: false,
   });
 
+  const [alertMessage, setAlertMessage] = React.useState({
+    message: "",
+    type: "",
+    open: false,
+  });
   function handleData(e) {
     setData({ ...data, [e.target.name]: e.target.value });
-    setUserExists(getData().some((user) => user.email === e.target.value));
-    setHandleErrors({
-      ...handleErrors,
-      [e.target.name]:
-        e.target.value === ""
-          ? false
-          : !e.target.value.match(regex[e.target.name]),
-    });
+
+    if (e.target.value !== "") {
+      setHandleErrors({ ...handleErrors, [e.target.name]: false });
+    }
+    if (alertMessage.open) {
+      setAlertMessage({ ...alertMessage, open: false });
+    }
+
+    // setUserExists(getData().some((user) => user.email === e.target.value));
+    // setHandleErrors({
+    //   ...handleErrors,
+    //   [e.target.name]:
+    //     e.target.value === ""
+    //       ? false
+    //       : !e.target.value.match(regex[e.target.name]),
+    // });
   }
 
   document.addEventListener("keypress", (e) => {
@@ -65,44 +73,104 @@ export default function SignUp() {
 
   function handleSignUp(event) {
     event.preventDefault();
+    const { email, password, confirmPassword } = data;
+    const userExits = getData().some((user) => user.email === email);
 
-    if (data.email && data.password && data.confirmPassword && !userExists) {
-      if (data.confirmPassword !== data.password) {
-        context.setAlertMessageData({
-          message: "Passwords doesn't match",
-          type: "warning",
-          open: true,
-        });
-      } else {
-        addData({
-          userId: data.userId,
-          email: data.email,
-          password: data.password,
-          contacts: [],
-        });
-
-        setCurrentUser({
-          userId: data.userId,
-          email: data.email,
-          password: data.password,
-        });
-
-        context.setAlertMessageData({
-          message: "Signed Up Successfully!!",
-          type: "success",
-          open: true,
-        });
-
-        context.setIsUserLoggedIn(true);
-        navigate("/contact-list");
-      }
+    if (email === "" && password !== "" && confirmPassword !== "") {
+      setHandleErrors({ email: true, password: false, confirmPassword: false });
+    } else if (email !== "" && password === "" && confirmPassword === "") {
+      setHandleErrors({ email: false, password: true, confirmPassword: true });
+    } else if (email === "" && password === "" && confirmPassword !== "") {
+      setHandleErrors({ email: true, password: true, confirmPassword: false });
+    } else if (email === "" && password !== "" && confirmPassword === "") {
+      setHandleErrors({ email: true, password: false, confirmPassword: true });
+    } else if (email !== "" && password === "" && confirmPassword !== "") {
+      setHandleErrors({ email: false, password: true, confirmPassword: false });
+    } else if (email !== "" && password !== "" && confirmPassword === "") {
+      setHandleErrors({ email: false, password: false, confirmPassword: true });
+    } else if (email === "" && password === "" && confirmPassword === "") {
+      setHandleErrors({ email: true, password: true, confirmPassword: true });
+    } else if (password !== confirmPassword) {
+      setAlertMessage({
+        message: "Password doesn't match",
+        type: "error",
+        open: true,
+      });
+    } else if (!email.match(regex.email)) {
+      setAlertMessage({
+        message: "Invalid email",
+        type: "error",
+        open: true,
+      });
+    } else if (userExits) {
+      setAlertMessage({
+        message: "User already exists. Please Sign In",
+        type: "error",
+        open: true,
+      });
+    } else if (!password.match(regex.password)) {
+      setAlertMessage({
+        message:
+          "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'",
+        type: "error",
+        open: true,
+      });
     } else {
+      setCurrentUser(data);
+      addData({
+        userId: data.userId,
+        email: data.email,
+        password: data.password,
+        contacts: [],
+      });
+
+      context.setIsUserLoggedIn(true);
+      navigate("/contact-list");
+
       context.setAlertMessageData({
-        message: "Please fill all the fields.",
-        type: "warning",
+        message: "Signed Up Successfully!!",
+        type: "success",
         open: true,
       });
     }
+
+    // if (data.email && data.password && data.confirmPassword && !userExists) {
+    //   if (data.confirmPassword !== data.password) {
+    //     context.setAlertMessageData({
+    //       message: "Passwords doesn't match",
+    //       type: "warning",
+    //       open: true,
+    //     });
+    //   } else {
+    //     addData({
+    //       userId: data.userId,
+    //       email: data.email,
+    //       password: data.password,
+    //       contacts: [],
+    //     });
+
+    //     setCurrentUser({
+    //       userId: data.userId,
+    //       email: data.email,
+    //       password: data.password,
+    //     });
+
+    //     context.setAlertMessageData({
+    //       message: "Signed Up Successfully!!",
+    //       type: "success",
+    //       open: true,
+    //     });
+
+    //     context.setIsUserLoggedIn(true);
+    //     navigate("/contact-list");
+    //   }
+    // } else {
+    //   context.setAlertMessageData({
+    //     message: "Please fill all the fields.",
+    //     type: "warning",
+    //     open: true,
+    //   });
+    // }
   }
 
   return (
@@ -124,6 +192,11 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign Up
           </Typography>
+          {alertMessage.open && (
+            <Alert sx={{ width: "100%" }} severity={alertMessage.type}>
+              {alertMessage.message}
+            </Alert>
+          )}
           <Box component="form" sx={{ mt: 1 }}>
             <TextField
               margin="normal"
@@ -136,12 +209,8 @@ export default function SignUp() {
               autoFocus
               value={data.email}
               onChange={handleData}
-              error={handleErrors.email || userExists}
-              helperText={
-                userExists
-                  ? "User already exists"
-                  : handleErrors.email && "Please enter a valid email"
-              }
+              error={handleErrors.email}
+              helperText={handleErrors.email && "Email is required"}
             />
             <TextField
               margin="normal"
@@ -155,10 +224,7 @@ export default function SignUp() {
               value={data.password}
               onChange={handleData}
               error={handleErrors.password}
-              helperText={
-                handleErrors.password &&
-                "password must contains  One UpperCase letter, One lowerCase letter and should be of atleast 8 characters "
-              }
+              helperText={handleErrors.password && "Password is required"}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="start">
@@ -189,6 +255,9 @@ export default function SignUp() {
               value={data.confirmPassword}
               onChange={handleData}
               error={handleErrors.confirmPassword}
+              helperText={
+                handleErrors.confirmPassword && "Confirm Password is required"
+              }
             />
 
             <Button

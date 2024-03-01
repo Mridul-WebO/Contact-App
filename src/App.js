@@ -2,7 +2,7 @@ import "./App.css";
 import { Outlet } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import { useState } from "react";
-import AlertMessage from "./components/AlertMessage";
+import SnackBar from "./components/SnackBar";
 import { fetchCurrentUser } from "./storage/Storage";
 
 function App() {
@@ -37,7 +37,7 @@ function App() {
         }}
       />
       {alertMessageData.open && (
-        <AlertMessage
+        <SnackBar
           alertMessageData={alertMessageData}
           setAlertMessageData={setAlertMessageData}
         />

@@ -5,21 +5,29 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
-import { Avatar, Box, Container, CssBaseline, TextField } from "@mui/material";
+import {
+  Alert,
+  Avatar,
+  Box,
+  Container,
+  CssBaseline,
+  TextField,
+} from "@mui/material";
 import getUniqueId from "./UniqueId";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-
+import { regex } from "./regex";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const regex = {
-  email: /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{1,5})$/,
-  phoneNumber: /^\d{10}$/,
-};
-
 export default function CustomDialog({ open, data, onSubmit, onClose }) {
   const imageUploadBtnRef = React.useRef(null);
+
+  const [alertMessage, setAlertMessage] = React.useState({
+    message: "",
+    type: "",
+    open: false,
+  });
 
   const [userContact, setUserContact] = React.useState(
     (data.userId !== "" && data) || {
@@ -31,12 +39,6 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
     }
   );
 
-  const [helperTextMessage, setHelperTextMessage] = React.useState({
-    name: "Name is required",
-    email: "Email is required",
-    phoneNumber: "Phone Number is required",
-  });
-
   const [handleErrors, setHandleErrors] = React.useState({
     name: false,
     email: false,
@@ -45,28 +47,50 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
 
   function handleContactData(e) {
     setUserContact({ ...userContact, [e.target.name]: e.target.value });
-    setHandleErrors({
-      ...handleErrors,
-      [e.target.name]:
-        e.target.value === ""
-          ? false
-          : !e.target.value.match(regex[e.target.name]),
-    });
+
+    if (e.target.value !== "") {
+      setHandleErrors({ ...handleErrors, [e.target.name]: false });
+    }
+    if (alertMessage.open) {
+      setAlertMessage({ ...alertMessage, open: false });
+    }
+    // setHandleErrors({
+    //   ...handleErrors,
+    //   [e.target.name]:
+    //     e.target.value === ""
+    //       ? false
+    //       : !e.target.value.match(regex[e.target.name]),
+    // });
   }
 
   function handleNewContact() {
-    if (!userContact.name && !userContact.email && !userContact.phoneNumber) {
-      setHandleErrors({ name: true, email: true, phoneNumber: true });
-    } else if (!userContact.name) {
-      setHandleErrors({ ...handleErrors, name: true });
-    } else if (!userContact.email.match(regex.email)) {
-      setHandleErrors({ ...handleErrors, email: true });
-      setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" });
-    } else if (!userContact.phoneNumber.match(regex.phoneNumber)) {
-      setHandleErrors({ ...handleErrors, phoneNumber: true });
-      setHelperTextMessage({
-        ...helperTextMessage,
-        phoneNumber: "Please enter a valid 10 digit phone number",
+    const { name, email, phoneNumber } = userContact;
+
+    if (email === "" && name !== "" && phoneNumber !== "") {
+      setHandleErrors({ email: true, name: false, phoneNumber: false });
+    } else if (email !== "" && name === "" && phoneNumber === "") {
+      setHandleErrors({ email: false, name: true, phoneNumber: true });
+    } else if (email === "" && name === "" && phoneNumber !== "") {
+      setHandleErrors({ email: true, name: true, phoneNumber: false });
+    } else if (email === "" && name !== "" && phoneNumber === "") {
+      setHandleErrors({ email: true, name: false, phoneNumber: true });
+    } else if (email !== "" && name === "" && phoneNumber !== "") {
+      setHandleErrors({ email: false, name: true, phoneNumber: false });
+    } else if (email !== "" && name !== "" && phoneNumber === "") {
+      setHandleErrors({ email: false, name: false, phoneNumber: true });
+    } else if (email === "" && name === "" && phoneNumber === "") {
+      setHandleErrors({ email: true, name: true, phoneNumber: true });
+    } else if (!phoneNumber.match(regex.phoneNumber)) {
+      setAlertMessage({
+        message: "Please enter a valid 10 digit phone number",
+        type: "error",
+        open: true,
+      });
+    } else if (!email.match(regex.email)) {
+      setAlertMessage({
+        message: "Invalid email",
+        type: "error",
+        open: true,
       });
     } else {
       onSubmit(userContact);
@@ -80,6 +104,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
     reader.addEventListener("load", () => {
       setUserContact({ ...userContact, imageUrl: reader.result });
     });
+    e.target.value = null;
   };
 
   return (
@@ -122,6 +147,14 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                 onChange={handlePhotoUpload}
                 style={{ display: "none" }}
               />
+              {alertMessage.open && (
+                <Alert
+                  sx={{ width: "100%", my: 3 }}
+                  severity={alertMessage.type}
+                >
+                  {alertMessage.message}
+                </Alert>
+              )}
               <Box component="form" noValidate sx={{ mt: 1 }}>
                 <TextField
                   margin="normal"
@@ -135,7 +168,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                   value={userContact?.name}
                   onChange={handleContactData}
                   error={handleErrors.name}
-                  helperText={handleErrors.name && helperTextMessage.name}
+                  helperText={handleErrors.name && "Name is required"}
                 />
                 <TextField
                   margin="normal"
@@ -149,7 +182,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                   value={userContact?.email}
                   onChange={handleContactData}
                   error={handleErrors.email}
-                  helperText={handleErrors.email && helperTextMessage.email}
+                  helperText={handleErrors.email && "Email is required"}
                 />
                 <TextField
                   margin="normal"
@@ -164,7 +197,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                   onChange={handleContactData}
                   error={handleErrors.phoneNumber}
                   helperText={
-                    handleErrors.phoneNumber && helperTextMessage.phoneNumber
+                    handleErrors.phoneNumber && "Phone number is required"
                   }
                 />
                 {data.userId === "" ? (

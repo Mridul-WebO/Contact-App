@@ -14,27 +14,31 @@ import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { InputAdornment } from "@mui/material";
+import { Alert, InputAdornment } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
 import { getData, setCurrentUser } from "../../storage/Storage";
+import { regex } from "../../components/regex";
 
 const defaultTheme = createTheme();
-
-const regex = {
-  email: /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{1,5})$/,
-  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
-};
 
 export default function SignIn() {
   const signInBtnRef = React.useRef(null);
   const context = useOutletContext();
   const navigate = useNavigate();
 
+  const [alertMessage, setAlertMessage] = React.useState({
+    message: "",
+    type: "",
+    open: false,
+  });
+
   const [showPassword, setShowPassword] = React.useState(false);
+
   const [data, setData] = React.useState({
     email: "",
     password: "",
   });
+
   const [handleErrors, setHandleErrors] = React.useState({
     email: false,
     password: false,
@@ -42,13 +46,13 @@ export default function SignIn() {
 
   function handleData(e) {
     setData({ ...data, [e.target.name]: e.target.value });
-    setHandleErrors({
-      ...handleErrors,
-      [e.target.name]:
-        e.target.value === ""
-          ? false
-          : !e.target.value.match(regex[e.target.name]),
-    });
+
+    if (e.target.value !== "") {
+      setHandleErrors({ ...handleErrors, [e.target.name]: false });
+    }
+    if (alertMessage.open) {
+      setAlertMessage({ ...alertMessage, open: false });
+    }
   }
 
   document.addEventListener("keypress", (e) => {
@@ -61,35 +65,40 @@ export default function SignIn() {
     event.preventDefault();
     const user = getData().find((user) => user.email === data.email);
 
-    if (!!data.email && !!data.password) {
-      if (!user) {
-        context.setAlertMessageData({
-          message: "User doesn't exists",
-          type: "error",
-          open: true,
-        });
-      } else if (data.password !== user.password) {
-        context.setAlertMessageData({
-          message: "Incorrect Password.",
-          type: "error",
-          open: true,
-        });
-      } else {
-        setCurrentUser(user);
+    const { email, password } = data;
 
-        context.setAlertMessageData({
-          message: "Signed Up Successfully!!",
-          type: "success",
-          open: true,
-        });
-
-        navigate("/contact-list");
-        context.setIsUserLoggedIn(true);
-      }
+    if (email === "" && password !== "") {
+      setHandleErrors({ email: true, password: false });
+    } else if (email !== "" && password === "") {
+      setHandleErrors({ email: false, password: true });
+    } else if (email === "" && password === "") {
+      setHandleErrors({ email: true, password: true });
+    } else if (!email.match(regex.email)) {
+      setAlertMessage({
+        message: "Invalid email",
+        type: "error",
+        open: true,
+      });
+    } else if (!user) {
+      setAlertMessage({
+        message: "User doesn't exists",
+        type: "error",
+        open: true,
+      });
+    } else if (data.password !== user.password) {
+      setAlertMessage({
+        message: "Invalid password",
+        type: "error",
+        open: true,
+      });
     } else {
+      setCurrentUser(user);
+      context.setIsUserLoggedIn(true);
+      navigate("/contact-list");
+
       context.setAlertMessageData({
-        message: "Please fill all the fields",
-        type: "warning",
+        message: "Signed Up Successfully!!",
+        type: "success",
         open: true,
       });
     }
@@ -114,7 +123,12 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign In
           </Typography>
-          <Box sx={{ mt: 1 }}>
+          {alertMessage.open && (
+            <Alert sx={{ width: "100%" }} severity={alertMessage.type}>
+              {alertMessage.message}
+            </Alert>
+          )}
+          <Box sx={{ mt: 1 }} component="form">
             <TextField
               margin="normal"
               required
@@ -127,7 +141,7 @@ export default function SignIn() {
               value={data.email}
               onChange={handleData}
               error={handleErrors.email}
-              helperText={handleErrors.email && "Please enter a valid email"}
+              helperText={handleErrors.email && "Email is required"}
             />
             <TextField
               margin="normal"
@@ -139,9 +153,9 @@ export default function SignIn() {
               id="password"
               autoComplete="current-password"
               value={data.password}
-              onChange={(e) =>
-                setData({ ...data, [e.target.name]: e.target.value })
-              }
+              onChange={handleData}
+              error={handleErrors.password}
+              helperText={handleErrors.password && "Password is required"}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="start">
@@ -162,6 +176,7 @@ export default function SignIn() {
             />
 
             <Button
+              type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}

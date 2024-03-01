@@ -2,10 +2,7 @@ import * as React from "react";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
-export default function AlertMessage({
-  alertMessageData,
-  setAlertMessageData,
-}) {
+export default function SnackBar({ alertMessageData, setAlertMessageData }) {
   const handleClose = () => {
     setAlertMessageData({ open: false });
   };
