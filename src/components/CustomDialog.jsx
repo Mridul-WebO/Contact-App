@@ -8,7 +8,6 @@ import Slide from "@mui/material/Slide";
 import { Avatar, Box, Container, CssBaseline, TextField } from "@mui/material";
 import getUniqueId from "./UniqueId";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { useRef } from "react";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -20,17 +19,17 @@ const regex = {
 };
 
 export default function CustomDialog({ open, data, onSubmit, onClose }) {
-  const imageUploadBtnRef = useRef(null);
+  const imageUploadBtnRef = React.useRef(null);
 
-  const [userContact, setUserContact] = React.useState((data.userId !== '' && data) || {
-    userId: getUniqueId(),
-    name: "",
-    email: "",
-    phoneNumber: "",
-    imageUrl: "",
-  });
-
-
+  const [userContact, setUserContact] = React.useState(
+    (data.userId !== "" && data) || {
+      userId: getUniqueId(),
+      name: "",
+      email: "",
+      phoneNumber: "",
+      imageUrl: "",
+    }
+  );
 
   const [helperTextMessage, setHelperTextMessage] = React.useState({
     name: "Name is required",
@@ -92,7 +91,9 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
         onClose={onClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>{data.userId === "" ? "Add new contact" : "Update contact"}</DialogTitle>
+        <DialogTitle>
+          {data.userId === "" ? "Add new contact" : "Update contact"}
+        </DialogTitle>
         <DialogContent>
           <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -108,12 +109,15 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                 sx={{ mx: 25, width: 75, height: 75 }}
                 alt=" Sharp"
                 src={userContact?.imageUrl}
-                onClick={() => { imageUploadBtnRef.current?.click() }}
+                onClick={() => {
+                  imageUploadBtnRef.current?.click();
+                }}
               >
                 <CloudUploadIcon />
               </Avatar>
               <input
                 type="file"
+                accept="image/png, image/gif, image/jpeg"
                 ref={imageUploadBtnRef}
                 onChange={handlePhotoUpload}
                 style={{ display: "none" }}

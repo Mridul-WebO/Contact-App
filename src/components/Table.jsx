@@ -5,27 +5,25 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Avatar, Container, Fab, Typography } from "@mui/material";
+import { Avatar, Button, Container, Fab, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CustomDialog from "./CustomDialog";
-import {
-  addContactDetails,
-  addImportedContactDetails,
-  deleteContact,
-  editContact,
-  fetchContactsDetails,
-} from "../storage/Storage";
-
 import Tooltip from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import exportFromJSON from "export-from-json";
-
 import Papa from "papaparse";
 import { useOutletContext } from "react-router-dom";
-
+import {
+  addContactDetails,
+  addImportedContactDetails,
+  deleteAllContacts,
+  deleteContact,
+  editContact,
+  fetchContactsDetails,
+} from "../storage/Storage";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -52,12 +50,20 @@ function handleEditRow(row, setCurrentRow, setOpen) {
   setOpen(true);
 }
 
-function handleDeleteRow(userId, contacts, setRows) {
+function handleDeleteRow(userId, contacts, setRows, context) {
   const updatedContacts = contacts.filter(
     (contact) => parseInt(contact.userId) !== userId
   );
   setRows(updatedContacts);
   deleteContact(updatedContacts);
+
+  context.setAlertMessageData({
+    message: "Contact deleted successfully!",
+    type: "success",
+    hideDuration: 2000,
+    open: true,
+  });
+  console.log(context);
 }
 
 function handleExportContacts() {
@@ -71,7 +77,6 @@ function handleExportContacts() {
 
 function handleImportContacts(event, context, rows, setRows) {
   const existingContacts = fetchContactsDetails();
-
   const file = event.target.files[0];
 
   Papa.parse(file, {
@@ -80,31 +85,42 @@ function handleImportContacts(event, context, rows, setRows) {
       if (res.data) {
         const newContacts = res.data.filter((newContact) => {
           return !existingContacts.some((oldContact) => {
-            console.log(newContact.userId, oldContact.userId);
             return parseInt(newContact.userId) === parseInt(oldContact.userId);
           });
         });
+        if (!newContacts[0]?.userId && newContacts?.length !== 0) {
+          context.setAlertMessageData({
+            message: "Error importing data. Please try again later.",
+            type: "error",
+            hideDuration: 2000,
+            open: true,
+          });
+        } else {
+          setRows([...newContacts, ...rows]);
+          addImportedContactDetails(newContacts);
 
-        setRows([...newContacts, ...rows]);
-
-        addImportedContactDetails(newContacts);
-
-        context.setAlertMessageData({
-          message: "Contacts imported successfully!!",
-          type: "success",
-          hideDuration: 3000,
-          ref: null,
-        });
+          context.setAlertMessageData({
+            message:
+              newContacts?.length === 0
+                ? "Duplicate contacts Merged successfully"
+                : "Contacts imported successfully!",
+            type: "success",
+            hideDuration: 2000,
+            open: true,
+          });
+        }
       } else {
         context.setAlertMessageData({
-          message: "Couldn't export data. Please try again after sometime",
+          message: "Couldn't import data. Please try again later.",
           type: "error",
-          ref: null,
+          hideDuration: 2000,
+          open: true,
         });
       }
-      context.alertMessageData.ref?.current.click();
     },
   });
+
+  event.target.value = null; // setting the value of input field to null in order to update the profile image
 }
 
 export default function BasicTable() {
@@ -117,7 +133,6 @@ export default function BasicTable() {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-
     if (!open) {
       setCurrentRow({
         userId: "",
@@ -126,59 +141,85 @@ export default function BasicTable() {
         phoneNumber: "",
         imageUrl: "",
       });
-
     }
   }, [open]);
 
   const onSubmit = (submittedData) => {
-
-
     const contacts = fetchContactsDetails();
-    const contactExits = contacts.some((contact) => contact.userId === submittedData.userId);
+    const contactExits = contacts.some(
+      (contact) => contact.userId === submittedData.userId
+    );
 
     if (!contactExits) {
       setRows([submittedData, ...rows]);
       addContactDetails(submittedData);
-
     } else {
       const data = rows.map((row) => {
         if (row.userId === submittedData.userId) {
           return submittedData;
         }
         return row;
-      }
-      );
+      });
       setRows([...data]);
-      editContact(submittedData)
+      editContact(submittedData);
     }
 
-
-
     setOpen(false);
+
+    context.setAlertMessageData({
+      message: !contactExits
+        ? "Contact added successfully!"
+        : "Contact updated successfully!",
+      type: "success",
+      hideDuration: 2000,
+      open: true,
+    });
   };
 
   const onClose = () => {
     setOpen(false);
   };
 
+  const handleDeleteAllContacts = () => {
+    setRows([]);
+    deleteAllContacts();
+
+    context.setAlertMessageData({
+      message: "Contacts deleted successfully!",
+      type: "success",
+      hideDuration: 2000,
+      open: true,
+    });
+  };
+
   return (
     <>
-      <div className="container">
-        <div className="row my-4">
-          <div className="col">
-            <h4>Welcome!! {context.userName} </h4>
-          </div>
-        </div>
-      </div>
+      <Container>
+        <Typography sx={{ my: 3, fontSize: 30 }}>
+          Welcome!! {context.userName}
+        </Typography>
+      </Container>
+
       <Container sx={{ my: 5, textAlign: "end" }}>
-        <Fab
-          color="primary"
-          aria-label="add"
-          sx={{ my: 1 }}
-          onClick={handleExportContacts}
-        >
-          <Typography sx={{ fontSize: 10 }}>Export data</Typography>
-        </Fab>
+        {rows.length !== 0 && (
+          <Button
+            sx={{ mx: 4 }}
+            variant="outlined"
+            onClick={handleDeleteAllContacts}
+          >
+            Delete All
+          </Button>
+        )}
+        {rows.length !== 0 && (
+          <Fab
+            color="primary"
+            aria-label="add"
+            sx={{ my: 1 }}
+            onClick={handleExportContacts}
+          >
+            <Typography sx={{ fontSize: 10 }}>Export data</Typography>
+          </Fab>
+        )}
         <Fab
           color="primary"
           aria-label="add"
@@ -188,6 +229,7 @@ export default function BasicTable() {
           <Typography sx={{ fontSize: 10 }}>Import data</Typography>
           <input
             type="file"
+            accept=".csv"
             style={{ display: "none" }}
             ref={importRef}
             onChange={(event) =>
@@ -225,8 +267,6 @@ export default function BasicTable() {
                       alt=" Sharp"
                       src={row?.imageUrl}
                     >
-
-
                       {!row.imageURL && row.email?.slice(0, 1).toUpperCase()}
                     </Avatar>
                   </StyledTableCell>
@@ -254,7 +294,8 @@ export default function BasicTable() {
                           handleDeleteRow(
                             parseInt(row.userId),
                             contacts,
-                            setRows
+                            setRows,
+                            context
                           )
                         }
                       />

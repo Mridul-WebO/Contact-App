@@ -1,9 +1,10 @@
 import { Navigate, Outlet, useOutletContext } from "react-router-dom";
+import { fetchCurrentUser } from "../storage/Storage";
 
 function ProtectedRoute() {
   const context = useOutletContext();
 
-  if (!sessionStorage.getItem("currentUser")) {
+  if (!fetchCurrentUser()) {
     return <Navigate to="/" />;
   }
 

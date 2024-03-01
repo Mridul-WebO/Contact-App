@@ -1,34 +1,22 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
-export default function AlertMessage({ alertMessageData }) {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClick = () => {
-    setOpen(true);
-  };
-
-  const ref = React.useRef(null);
-  alertMessageData.ref = ref;
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
+export default function AlertMessage({
+  alertMessageData,
+  setAlertMessageData,
+}) {
+  const handleClose = () => {
+    setAlertMessageData({ open: false });
   };
 
   return (
     <div>
-      <Button ref={ref} onClick={handleClick}></Button>
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={open}
+        open={alertMessageData?.open}
         onClose={handleClose}
-        autoHideDuration={alertMessageData.hideDuration || 2000}
+        autoHideDuration={alertMessageData?.hideDuration || 2000}
       >
         <Alert
           onClose={handleClose}

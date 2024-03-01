@@ -1,3 +1,4 @@
+import "./SignUp.css";
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -13,14 +14,11 @@ import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-
 import { InputAdornment } from "@mui/material";
-import "./SignUp.css";
-// Storage
-
-import { addData, getData } from "../../storage/Storage";
+import { addData, getData, setCurrentUser } from "../../storage/Storage";
 import getUniqueId from "./../../components/UniqueId";
 import { useOutletContext } from "react-router-dom";
+
 const defaultTheme = createTheme();
 
 const regex = {
@@ -29,21 +27,18 @@ const regex = {
 };
 
 export default function SignUp() {
+  const signUpBtnRef = React.useRef(null);
   const navigate = useNavigate();
   const context = useOutletContext();
 
-  const signUpBtnRef = React.useRef(null);
-
   const [showPassword, setShowPassword] = React.useState(false);
   const [userExists, setUserExists] = React.useState(false);
-
   const [data, setData] = React.useState({
     userId: getUniqueId(),
     email: "",
     password: "",
     confirmPassword: "",
   });
-
   const [handleErrors, setHandleErrors] = React.useState({
     email: false,
     password: false,
@@ -52,9 +47,7 @@ export default function SignUp() {
 
   function handleData(e) {
     setData({ ...data, [e.target.name]: e.target.value });
-
     setUserExists(getData().some((user) => user.email === e.target.value));
-
     setHandleErrors({
       ...handleErrors,
       [e.target.name]:
@@ -78,7 +71,7 @@ export default function SignUp() {
         context.setAlertMessageData({
           message: "Passwords doesn't match",
           type: "warning",
-          ref: null,
+          open: true,
         });
       } else {
         addData({
@@ -88,25 +81,16 @@ export default function SignUp() {
           contacts: [],
         });
 
-        context.setCurrentUser({
+        setCurrentUser({
           userId: data.userId,
           email: data.email,
           password: data.password,
-          contacts: [],
         });
-        sessionStorage.setItem(
-          "currentUser",
-          JSON.stringify({
-            userId: data.userId,
-            email: data.email,
-            password: data.password,
-          })
-        );
 
         context.setAlertMessageData({
           message: "Signed Up Successfully!!",
           type: "success",
-          ref: null,
+          open: true,
         });
 
         context.setIsUserLoggedIn(true);
@@ -116,10 +100,9 @@ export default function SignUp() {
       context.setAlertMessageData({
         message: "Please fill all the fields.",
         type: "warning",
-        ref: null,
+        open: true,
       });
     }
-    context.alertMessageData.ref?.current.click();
   }
 
   return (

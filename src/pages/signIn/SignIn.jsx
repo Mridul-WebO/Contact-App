@@ -1,3 +1,4 @@
+import "./SignIn.css";
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -13,13 +14,10 @@ import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-
 import { InputAdornment } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
-import "./SignIn.css";
-// Storage
+import { getData, setCurrentUser } from "../../storage/Storage";
 
-import { getData } from "../../storage/Storage";
 const defaultTheme = createTheme();
 
 const regex = {
@@ -28,17 +26,15 @@ const regex = {
 };
 
 export default function SignIn() {
-  const context = useOutletContext();
   const signInBtnRef = React.useRef(null);
+  const context = useOutletContext();
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = React.useState(false);
-
   const [data, setData] = React.useState({
     email: "",
     password: "",
   });
-
   const [handleErrors, setHandleErrors] = React.useState({
     email: false,
     password: false,
@@ -63,7 +59,6 @@ export default function SignIn() {
 
   function handleSignIn(event) {
     event.preventDefault();
-
     const user = getData().find((user) => user.email === data.email);
 
     if (!!data.email && !!data.password) {
@@ -71,23 +66,23 @@ export default function SignIn() {
         context.setAlertMessageData({
           message: "User doesn't exists",
           type: "error",
-          ref: null,
+          open: true,
         });
       } else if (data.password !== user.password) {
         context.setAlertMessageData({
           message: "Incorrect Password.",
           type: "error",
-          ref: null,
+          open: true,
         });
       } else {
-        context.setCurrentUser(user);
-        sessionStorage.setItem("currentUser", JSON.stringify(user));
+        setCurrentUser(user);
 
         context.setAlertMessageData({
           message: "Signed Up Successfully!!",
           type: "success",
-          ref: null,
+          open: true,
         });
+
         navigate("/contact-list");
         context.setIsUserLoggedIn(true);
       }
@@ -95,10 +90,9 @@ export default function SignIn() {
       context.setAlertMessageData({
         message: "Please fill all the fields",
         type: "warning",
-        ref: null,
+        open: true,
       });
     }
-    context.alertMessageData.ref?.current.click();
   }
 
   return (

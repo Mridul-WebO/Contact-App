@@ -105,6 +105,15 @@ export function addData(dataObj) {
   }
 }
 
+export function setCurrentUser(userData) {
+  try {
+    sessionStorage.setItem("currentUser", JSON.stringify(userData));
+    return true;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 export function removeCurrentUser() {
   try {
     sessionStorage.removeItem("currentUser");
@@ -127,7 +136,6 @@ export function fetchContactsDetails() {
   try {
     const currentUser = fetchCurrentUser();
     const { userId } = currentUser;
-
     const userDetail = getSingleData(userId);
     const contactDetails = userDetail.contacts;
 
@@ -141,16 +149,13 @@ export function addContactDetails(dataObj) {
   try {
     const data = getData();
     const { userId } = fetchCurrentUser();
-
     const currentUser = data.find((user) => user.userId === userId);
     const currentUserIndex = data.findIndex((user) => user.userId === userId);
-
     currentUser?.contacts.unshift(dataObj);
     data.splice(currentUserIndex, 1, currentUser);
-
     setter(data);
-    return true;
 
+    return true;
   } catch (error) {
     throw new Error(error);
   }
@@ -161,12 +166,10 @@ export function addImportedContactDetails(dataArr) {
     const data = getData();
     const { userId } = fetchCurrentUser();
     const currentUser = data.find((user) => user.userId === userId);
-
     currentUser.contacts = [...dataArr, ...currentUser.contacts];
-
     setter(data);
-    return true;
 
+    return true;
   } catch (error) {
     throw new Error(error);
   }
@@ -177,21 +180,17 @@ export function deleteContact(contactsArr) {
     const data = getData();
     const { userId } = fetchCurrentUser();
     const currentUser = data.find((user) => user.userId === userId);
-
     currentUser.contacts = contactsArr;
-
     setter(data);
-    return true;
 
+    return true;
   } catch (error) {
     throw new Error(error);
   }
 }
 
-
 export function editContact(dataObj) {
   try {
-
     const data = getData();
     const { userId } = fetchCurrentUser();
     const { contacts } = data.find((user) => user.userId === userId);
@@ -199,8 +198,22 @@ export function editContact(dataObj) {
       (contact) => contact.userId === dataObj.userId
     );
     contacts.splice(rowIndex, 1, dataObj);
-
     setter(data);
+
+    return true;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export function deleteAllContacts() {
+  try {
+    const data = getData();
+    const { userId } = fetchCurrentUser();
+    const currentUser = data.find((user) => user.userId === userId);
+    currentUser.contacts = [];
+    setter(data);
+
     return true;
   } catch (error) {
     throw new Error(error);
