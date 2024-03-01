@@ -16,7 +16,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Alert, InputAdornment } from "@mui/material";
 import { addData, getData, setCurrentUser } from "../../storage/Storage";
-import getUniqueId from "./../../components/UniqueId";
+import getUniqueId from "../../components/uniqueId";
 import { useOutletContext } from "react-router-dom";
 import { regex } from "../../components/regex";
 const defaultTheme = createTheme();
@@ -27,6 +27,7 @@ export default function SignUp() {
   const context = useOutletContext();
 
   const [showPassword, setShowPassword] = React.useState(false);
+  const [flag, setFlag] = React.useState(false);
 
   const [data, setData] = React.useState({
     userId: getUniqueId(),
@@ -64,7 +65,10 @@ export default function SignUp() {
 
   function handleSignUp(event) {
     event.preventDefault();
+    setFlag(true);
+
     const { email, password, confirmPassword } = data;
+
     const userExits = getData().some((user) => user.email === email);
 
     if (email === "" && password !== "" && confirmPassword !== "") {
@@ -107,6 +111,7 @@ export default function SignUp() {
         open: true,
       });
     } else {
+      setFlag(false);
       setCurrentUser(data);
       addData({
         userId: data.userId,

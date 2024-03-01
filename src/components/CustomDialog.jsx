@@ -13,7 +13,7 @@ import {
   CssBaseline,
   TextField,
 } from "@mui/material";
-import getUniqueId from "./UniqueId";
+import getUniqueId from "./uniqueId";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { regex } from "./regex";
 

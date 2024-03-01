@@ -33,6 +33,7 @@ export default function SignIn() {
   });
 
   const [showPassword, setShowPassword] = React.useState(false);
+  const [flag, setFlag] = React.useState(false);
 
   const [data, setData] = React.useState({
     email: "",
@@ -44,12 +45,31 @@ export default function SignIn() {
     password: false,
   });
 
+  const [helperTextMessage, setHelperTextMessage] =
+    React.useState("Email is required");
+
   function handleData(e) {
     setData({ ...data, [e.target.name]: e.target.value });
 
-    if (e.target.value !== "") {
-      setHandleErrors({ ...handleErrors, [e.target.name]: false });
+    if (flag) {
+      if (e.target.password !== "") {
+        setHandleErrors({ ...handleErrors, password: false });
+      }
+
+      if (e.target.name === "email") {
+        if (e.target.value === "") {
+          setHelperTextMessage("Email is required");
+          setHandleErrors({ ...handleErrors, email: true });
+        } else if (!e.target.value.match(regex.email)) {
+          setHelperTextMessage("Invalid Email");
+          setHandleErrors({ ...handleErrors, email: true });
+        } else {
+          setHelperTextMessage("");
+          setHandleErrors({ ...handleErrors, email: false });
+        }
+      }
     }
+
     if (alertMessage.open) {
       setAlertMessage({ ...alertMessage, open: false });
     }
@@ -63,6 +83,7 @@ export default function SignIn() {
 
   function handleSignIn(event) {
     event.preventDefault();
+    setFlag(true);
     const user = getData().find((user) => user.email === data.email);
 
     const { email, password } = data;
@@ -74,11 +95,8 @@ export default function SignIn() {
     } else if (email === "" && password === "") {
       setHandleErrors({ email: true, password: true });
     } else if (!email.match(regex.email)) {
-      setAlertMessage({
-        message: "Invalid email",
-        type: "error",
-        open: true,
-      });
+      setHandleErrors({ email: true, password: false });
+      setHelperTextMessage("Invalid email");
     } else if (!user) {
       setAlertMessage({
         message: "User doesn't exists",
@@ -92,6 +110,7 @@ export default function SignIn() {
         open: true,
       });
     } else {
+      setFlag(false);
       setCurrentUser(user);
       context.setIsUserLoggedIn(true);
       navigate("/contact-list");
@@ -141,7 +160,7 @@ export default function SignIn() {
               value={data.email}
               onChange={handleData}
               error={handleErrors.email}
-              helperText={handleErrors.email && "Email is required"}
+              helperText={handleErrors.email && helperTextMessage}
             />
             <TextField
               margin="normal"
