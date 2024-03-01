@@ -114,14 +114,6 @@ export function setCurrentUser(userData) {
   }
 }
 
-export function removeCurrentUser() {
-  try {
-    sessionStorage.removeItem("currentUser");
-  } catch (error) {
-    throw new Error(error);
-  }
-}
-
 export function fetchCurrentUser() {
   try {
     const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
@@ -131,7 +123,15 @@ export function fetchCurrentUser() {
   }
 }
 
-// will give contact details of current user
+export function removeCurrentUser() {
+  try {
+    sessionStorage.removeItem("currentUser");
+    return true;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 export function fetchContactsDetails() {
   try {
     const currentUser = fetchCurrentUser();

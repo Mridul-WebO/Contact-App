@@ -16,17 +16,25 @@ import {
 import getUniqueId from "./UniqueId";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { regex } from "./regex";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function CustomDialog({ open, data, onSubmit, onClose }) {
   const imageUploadBtnRef = React.useRef(null);
+  const handleNewContactBtnRef = React.useRef(null);
 
   const [alertMessage, setAlertMessage] = React.useState({
     message: "",
     type: "",
     open: false,
+  });
+
+  document.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      handleNewContactBtnRef.current?.click();
+    }
   });
 
   const [userContact, setUserContact] = React.useState(
@@ -54,13 +62,6 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
     if (alertMessage.open) {
       setAlertMessage({ ...alertMessage, open: false });
     }
-    // setHandleErrors({
-    //   ...handleErrors,
-    //   [e.target.name]:
-    //     e.target.value === ""
-    //       ? false
-    //       : !e.target.value.match(regex[e.target.name]),
-    // });
   }
 
   function handleNewContact() {
@@ -80,15 +81,15 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
       setHandleErrors({ email: false, name: false, phoneNumber: true });
     } else if (email === "" && name === "" && phoneNumber === "") {
       setHandleErrors({ email: true, name: true, phoneNumber: true });
-    } else if (!phoneNumber.match(regex.phoneNumber)) {
-      setAlertMessage({
-        message: "Please enter a valid 10 digit phone number",
-        type: "error",
-        open: true,
-      });
     } else if (!email.match(regex.email)) {
       setAlertMessage({
         message: "Invalid email",
+        type: "error",
+        open: true,
+      });
+    } else if (!phoneNumber.match(regex.phoneNumber)) {
+      setAlertMessage({
+        message: "Please enter a valid 10 digit phone number",
         type: "error",
         open: true,
       });
@@ -200,33 +201,22 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                     handleErrors.phoneNumber && "Phone number is required"
                   }
                 />
-                {data.userId === "" ? (
-                  <Button
-                    onClick={handleNewContact}
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
-                  >
-                    Add
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleNewContact}
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
-                  >
-                    Update
-                  </Button>
-                )}
+
+                <Button
+                  onClick={handleNewContact}
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  ref={handleNewContactBtnRef}
+                >
+                  {data.userId === "" ? "Add" : "Update"}
+                </Button>
               </Box>
             </Box>
           </Container>
         </DialogContent>
         <DialogActions>
-          <Button type="submit" onClick={onClose}>
-            Close
-          </Button>
+          <Button onClick={onClose}>Close</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

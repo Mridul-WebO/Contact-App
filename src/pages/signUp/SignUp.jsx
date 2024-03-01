@@ -54,15 +54,6 @@ export default function SignUp() {
     if (alertMessage.open) {
       setAlertMessage({ ...alertMessage, open: false });
     }
-
-    // setUserExists(getData().some((user) => user.email === e.target.value));
-    // setHandleErrors({
-    //   ...handleErrors,
-    //   [e.target.name]:
-    //     e.target.value === ""
-    //       ? false
-    //       : !e.target.value.match(regex[e.target.name]),
-    // });
   }
 
   document.addEventListener("keypress", (e) => {
@@ -133,44 +124,6 @@ export default function SignUp() {
         open: true,
       });
     }
-
-    // if (data.email && data.password && data.confirmPassword && !userExists) {
-    //   if (data.confirmPassword !== data.password) {
-    //     context.setAlertMessageData({
-    //       message: "Passwords doesn't match",
-    //       type: "warning",
-    //       open: true,
-    //     });
-    //   } else {
-    //     addData({
-    //       userId: data.userId,
-    //       email: data.email,
-    //       password: data.password,
-    //       contacts: [],
-    //     });
-
-    //     setCurrentUser({
-    //       userId: data.userId,
-    //       email: data.email,
-    //       password: data.password,
-    //     });
-
-    //     context.setAlertMessageData({
-    //       message: "Signed Up Successfully!!",
-    //       type: "success",
-    //       open: true,
-    //     });
-
-    //     context.setIsUserLoggedIn(true);
-    //     navigate("/contact-list");
-    //   }
-    // } else {
-    //   context.setAlertMessageData({
-    //     message: "Please fill all the fields.",
-    //     type: "warning",
-    //     open: true,
-    //   });
-    // }
   }
 
   return (
@@ -261,7 +214,6 @@ export default function SignUp() {
             />
 
             <Button
-              type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}

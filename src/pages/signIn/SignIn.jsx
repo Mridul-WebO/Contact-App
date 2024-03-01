@@ -176,7 +176,6 @@ export default function SignIn() {
             />
 
             <Button
-              type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
