@@ -61,7 +61,7 @@ export default function SignIn() {
           setHelperTextMessage("Email is required");
           setHandleErrors({ ...handleErrors, email: true });
         } else if (!e.target.value.match(regex.email)) {
-          setHelperTextMessage("Invalid Email");
+          setHelperTextMessage("Invalid email");
           setHandleErrors({ ...handleErrors, email: true });
         } else {
           setHelperTextMessage("");
@@ -75,11 +75,23 @@ export default function SignIn() {
     }
   }
 
-  document.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      signInBtnRef.current?.click();
+  React.useEffect(() => {
+    document.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        signInBtnRef.current?.click();
+      }
+    });
+
+    return () => {
+      document.removeEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          signInBtnRef.current?.click();
+        }
+      });
     }
-  });
+  }, [])
+
+
 
   function handleSignIn(event) {
     event.preventDefault();
@@ -88,18 +100,23 @@ export default function SignIn() {
 
     const { email, password } = data;
 
-    if (email === "" && password !== "") {
-      setHandleErrors({ email: true, password: false });
-    } else if (email !== "" && password === "") {
-      setHandleErrors({ email: false, password: true });
-    } else if (email === "" && password === "") {
+    if (email === "" && password === "") {
       setHandleErrors({ email: true, password: true });
+    } else if (email === "" && password !== "") {
+      setHandleErrors({ email: true, password: false });
+    } else if (email.match(regex.email) && password === "") {
+      setHandleErrors({ email: false, password: true });
+    } else if (!email.match(regex.email) && password === "") {
+      setHandleErrors({ email: true, password: true });
+      setHelperTextMessage("Invalid email");
     } else if (!email.match(regex.email)) {
       setHandleErrors({ email: true, password: false });
       setHelperTextMessage("Invalid email");
     } else if (!user) {
       setAlertMessage({
-        message: "User doesn't exists",
+        message: (<span>
+          User doesn't exists. Please <Link to="/sign-up">Sign Up</Link>
+        </span>),
         type: "error",
         open: true,
       });
