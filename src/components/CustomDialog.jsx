@@ -59,9 +59,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
   function handleContactData(e) {
     setUserContact({ ...userContact, [e.target.name]: e.target.value });
     if (flag) {
-
       switch (e.target.name) {
-
         case 'name':
           if (e.target.value === "") {
             setHandleErrors({ ...handleErrors, name: true })
@@ -69,7 +67,6 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
             setHandleErrors({ ...handleErrors, name: false })
           }
           break;
-
         case 'email':
           if (e.target.value === "") {
             setHelperTextMessage({ ...helperTextMessage, email: "Email is required" })
@@ -82,7 +79,6 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
             setHandleErrors({ ...handleErrors, email: false })
           }
           break;
-
         case 'phoneNumber':
           if (e.target.value === "") {
             setHelperTextMessage({ ...helperTextMessage, phoneNumber: "Phone number is required" })
@@ -95,11 +91,8 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
             setHandleErrors({ ...handleErrors, phoneNumber: false })
           }
           break;
-
       }
     }
-
-
 
     if (alertMessage.open) {
       setAlertMessage({ ...alertMessage, open: false });
@@ -112,36 +105,26 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
 
     const { name, email, phoneNumber } = userContact;
 
-    if (email === "" && name === "" && phoneNumber === "") {
-      setHandleErrors({ email: true, name: true, phoneNumber: true });
-    } else if (name === "" && !email.match(regex.email) && phoneNumber === "") {
-      setHelperTextMessage({ email: "Invalid email", phoneNumber: "Phone number is required" })
-      setHandleErrors({ email: true, name: true, phoneNumber: true });
-    } else if (name === "" && email !== "" && phoneNumber !== "") {
-      setHandleErrors({ ...handleErrors, name: true });
-    } else if (!email.match(regex.email) && phoneNumber === "") {
-      setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" })
-      setHandleErrors({ ...handleErrors, email: true, phoneNumber: true });
-    } else if (!email.match(regex.email) && !phoneNumber.match(regex.phoneNumber)) {
-      setHelperTextMessage({ email: "Invalid email", phoneNumber: "Please enter a valid 10 digit phone number" })
-      setHandleErrors({ ...handleErrors, email: true, phoneNumber: true });
-    } else if (email !== "" && name === "" && phoneNumber === "") {
-      setHandleErrors({ email: false, name: true, phoneNumber: true });
-    } else if (email === "" && name === "" && phoneNumber !== "") {
-      setHandleErrors({ email: true, name: true, phoneNumber: false });
-    } else if (email === "" && name !== "" && phoneNumber === "") {
-      setHandleErrors({ email: true, name: false, phoneNumber: true });
-    } else if (email !== "" && name === "" && phoneNumber !== "") {
-      setHandleErrors({ email: false, name: true, phoneNumber: false });
-    } else if (email !== "" && name !== "" && phoneNumber === "") {
-      setHandleErrors({ email: false, name: false, phoneNumber: true });
-    } else if (!email.match(regex.email)) {
-      setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" })
-      setHandleErrors({ ...handleErrors, email: true });
-    } else if (!phoneNumber.match(regex.phoneNumber)) {
-      setHelperTextMessage({ ...helperTextMessage, email: "Please enter a valid 10 digit phone number" })
-      setHandleErrors({ ...handleErrors, phoneNumber: true });
-    } else {
+    if (!name && !email && !phoneNumber) {
+      setHandleErrors({ name: true, email: true, phoneNumber: true })
+    } else if (!name && !email) {
+      if (!phoneNumber.match(regex.phoneNumber)) {
+        setHelperTextMessage({ ...helperTextMessage, phoneNumber: "Please enter a valid 10 digit phone number" })
+        setHandleErrors({ name: true, email: true, phoneNumber: true })
+      } else {
+        setHandleErrors({ name: true, email: true, phoneNumber: false })
+      }
+    } else if (!name && !phoneNumber) {
+      if (!email.match(regex.email)) {
+        setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" })
+        setHandleErrors({ name: true, email: true, phoneNumber: true })
+      } else {
+        setHandleErrors({ name: true, email: false, phoneNumber: true })
+      }
+    } else if (!email && !phoneNumber) {
+      setHandleErrors({ name: false, email: true, phoneNumber: true })
+    }
+    else {
       onSubmit(userContact);
       setFlag(false)
     }

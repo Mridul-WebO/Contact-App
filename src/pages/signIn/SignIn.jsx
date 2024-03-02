@@ -46,27 +46,34 @@ export default function SignIn() {
   });
 
   const [helperTextMessage, setHelperTextMessage] =
-    React.useState("Email is required");
+    React.useState({ email: "Email is required", password: "Password is required" });
 
   function handleData(e) {
     setData({ ...data, [e.target.name]: e.target.value });
 
     if (flag) {
-      if (e.target.password !== "") {
-        setHandleErrors({ ...handleErrors, password: false });
-      }
-
-      if (e.target.name === "email") {
-        if (e.target.value === "") {
-          setHelperTextMessage("Email is required");
-          setHandleErrors({ ...handleErrors, email: true });
-        } else if (!e.target.value.match(regex.email)) {
-          setHelperTextMessage("Invalid email");
-          setHandleErrors({ ...handleErrors, email: true });
-        } else {
-          setHelperTextMessage("");
-          setHandleErrors({ ...handleErrors, email: false });
-        }
+      switch (e.target.name) {
+        case "email":
+          if (!e.target.value) {
+            setHelperTextMessage({ ...helperTextMessage, email: "Email is required" })
+            setHandleErrors({ ...handleErrors, email: true });
+          } else if (!e.target.value.match(regex.email)) {
+            setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" })
+            setHandleErrors({ ...handleErrors, email: true });
+          } else {
+            setHelperTextMessage({ ...helperTextMessage, email: "" })
+            setHandleErrors({ ...handleErrors, email: false });
+          }
+          break;
+        case "password":
+          if (!e.target.value) {
+            setHelperTextMessage({ ...helperTextMessage, password: "Password is required" })
+            setHandleErrors({ ...handleErrors, password: true });
+          } else {
+            setHelperTextMessage({ ...helperTextMessage, password: "" })
+            setHandleErrors({ ...handleErrors, password: false });
+          }
+          break;
       }
     }
 
@@ -100,18 +107,19 @@ export default function SignIn() {
 
     const { email, password } = data;
 
-    if (email === "" && password === "") {
+
+    if (!email && !password) {
       setHandleErrors({ email: true, password: true });
-    } else if (email === "" && password !== "") {
+    } else if (!email) {
       setHandleErrors({ email: true, password: false });
-    } else if (email.match(regex.email) && password === "") {
-      setHandleErrors({ email: false, password: true });
-    } else if (!email.match(regex.email) && password === "") {
-      setHandleErrors({ email: true, password: true });
-      setHelperTextMessage("Invalid email");
-    } else if (!email.match(regex.email)) {
-      setHandleErrors({ email: true, password: false });
-      setHelperTextMessage("Invalid email");
+    } else if (!password) {
+      if (!email.match(regex.email)) {
+        setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" })
+        setHandleErrors({ email: true, password: true });
+      } else {
+        setHelperTextMessage({ ...helperTextMessage, email: "" })
+        setHandleErrors({ email: false, password: true });
+      }
     } else if (!user) {
       setAlertMessage({
         message: (<span>
@@ -120,6 +128,7 @@ export default function SignIn() {
         type: "error",
         open: true,
       });
+
     } else if (data.password !== user.password) {
       setAlertMessage({
         message: "Invalid password",
@@ -177,7 +186,7 @@ export default function SignIn() {
               value={data.email}
               onChange={handleData}
               error={handleErrors.email}
-              helperText={handleErrors.email && helperTextMessage}
+              helperText={handleErrors.email && helperTextMessage.email}
             />
             <TextField
               margin="normal"
@@ -191,7 +200,7 @@ export default function SignIn() {
               value={data.password}
               onChange={handleData}
               error={handleErrors.password}
-              helperText={handleErrors.password && "Password is required"}
+              helperText={handleErrors.password && helperTextMessage.password}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="start">
