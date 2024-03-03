@@ -120,67 +120,116 @@ export default function SignUp() {
 
     const userExists = getData().some((user) => user.email === email);
 
-    if (email === "" && password === "" && confirmPassword === "") {
-      setHandleErrors({ email: true, password: true, confirmPassword: true });
-    }
-    else if (email === "" && password !== "" && confirmPassword === "") {
-      setHelperTextMessage({ email: "Email is required", password: "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'", confirmPassword: "Confirm password is required" })
-      setHandleErrors({ email: true, password: true, confirmPassword: true });
-    } else if (email === "" && password === "" && confirmPassword !== "") {
-      setHelperTextMessage({ email: "Email is required", password: "Password is required", confirmPassword: "Confirm password doesn't match" })
-      setHandleErrors({ email: true, password: true, confirmPassword: true });
-    }
-    else if (email === "" && password !== "" && confirmPassword !== password) {
-      setHelperTextMessage({ ...helperTextMessage, email: "Email is required", confirmPassword: "Confirm password doesn't match" })
-      setHandleErrors({ email: true, password: false, confirmPassword: true });
-    } else if (email === "" && password !== "" && confirmPassword === password) {
-      setHelperTextMessage({ ...helperTextMessage, email: "Email is required" })
-      setHandleErrors({ ...handleErrors, email: true });
-    }
-    else if (!email.match(regex.email) && password === "" && confirmPassword === "") {
-      setHandleErrors({ email: true, password: true, confirmPassword: true });
-      setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" })
+    // if (email === "" && password === "" && confirmPassword === "") {
+    //   setHandleErrors({ email: true, password: true, confirmPassword: true });
+    // }
+    // else if (email === "" && password !== "" && confirmPassword === "") {
+    //   setHelperTextMessage({ email: "Email is required", password: "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'", confirmPassword: "Confirm password is required" })
+    //   setHandleErrors({ email: true, password: true, confirmPassword: true });
+    // } else if (email === "" && password === "" && confirmPassword !== "") {
+    //   setHelperTextMessage({ email: "Email is required", password: "Password is required", confirmPassword: "Confirm password doesn't match" })
+    //   setHandleErrors({ email: true, password: true, confirmPassword: true });
+    // }
+    // else if (email === "" && password !== "" && confirmPassword !== password) {
+    //   setHelperTextMessage({ ...helperTextMessage, email: "Email is required", confirmPassword: "Confirm password doesn't match" })
+    //   setHandleErrors({ email: true, password: false, confirmPassword: true });
+    // } else if (email === "" && password !== "" && confirmPassword === password) {
+    //   setHelperTextMessage({ ...helperTextMessage, email: "Email is required" })
+    //   setHandleErrors({ ...handleErrors, email: true });
+    // }
+    // else if (!email.match(regex.email) && password === "" && confirmPassword === "") {
+    //   setHandleErrors({ email: true, password: true, confirmPassword: true });
+    //   setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" })
 
-    } else if (!email.match(regex.email) && !password.match(regex.password) && confirmPassword === "") {
-      setHelperTextMessage({ ...helperTextMessage, confirmPassword: "Confirm password is required" })
-      setHandleErrors({ ...handleErrors, confirmPassword: true });
+    // } else if (!email.match(regex.email) && !password.match(regex.password) && confirmPassword === "") {
+    //   setHelperTextMessage({ ...helperTextMessage, confirmPassword: "Confirm password is required" })
+    //   setHandleErrors({ ...handleErrors, confirmPassword: true });
 
-    } else if (!email.match(regex.email) && !password.match(regex.password) && confirmPassword === password) {
-      setHelperTextMessage({ email: "Invalid email", password: "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'" })
-      setHandleErrors({ email: true, password: true, confirmPassword: false });
+    // } else if (!email.match(regex.email) && !password.match(regex.password) && confirmPassword === password) {
+    //   setHelperTextMessage({ email: "Invalid email", password: "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'" })
+    //   setHandleErrors({ email: true, password: true, confirmPassword: false });
 
-    } else if (!email.match(regex.email) && !password.match(regex.password) && confirmPassword !== password) {
-      setHelperTextMessage({ email: "Invalid email", password: "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'", confirmPassword: "Confirm password doesn't match" })
-      setHandleErrors({ email: true, password: true, confirmPassword: true });
+    // } else if (!email.match(regex.email) && !password.match(regex.password) && confirmPassword !== password) {
+    //   setHelperTextMessage({ email: "Invalid email", password: "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'", confirmPassword: "Confirm password doesn't match" })
+    //   setHandleErrors({ email: true, password: true, confirmPassword: true });
+
+    // }
+    // else if (email.match(regex.email) && !password.match(regex.password) && confirmPassword !== password) {
+    //   setHelperTextMessage({ email: "", password: "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'", confirmPassword: "Confirm password doesn't match" })
+    //   setHandleErrors({ email: false, password: true, confirmPassword: true });
+
+    // } else if (email.match(regex.email) && password.match(regex.password) && confirmPassword !== password) {
+    //   setHelperTextMessage({ email: "", password: "", confirmPassword: "Confirm password  doesn't match" })
+    //   setHandleErrors({ email: false, password: false, confirmPassword: true });
+
+    // }
+    // else if (email.match(regex.email) && password === "" && confirmPassword === "") {
+    //   setHandleErrors({ email: false, password: true, confirmPassword: true });
+    // }
+    // else if (email === "" && password !== "" && confirmPassword === "") {
+    //   setHandleErrors({ email: true, password: false, confirmPassword: true });
+    // } else if (email !== "" && password === "" && confirmPassword !== "") {
+    //   setHandleErrors({ email: false, password: true, confirmPassword: false });
+    // } else if (email !== "" && password !== "" && confirmPassword === "") {
+    //   setHandleErrors({ email: false, password: false, confirmPassword: true });
+    // } else if (!email.match(regex.email)) {
+    //   setHandleErrors({ ...handleErrors, email: true });
+    // }
+    // else if (!password.match(regex.password)) {
+    //   setHandleErrors({ ...handleErrors, password: true });
+    // } else if (confirmPassword !== password) {
+    //   setHandleErrors({ ...handleErrors, confirmPassword: true });
+    // }
+    if (!email && !password && !confirmPassword) {
+      setHandleErrors({ email: true, password: true, confirmPassword: true })
+    }
+    else if (!email && !password) {
+      setHelperTextMessage({ ...helperTextMessage, confirmPassword: "Confirm password doesn't match" })
+      setHandleErrors({ email: true, password: true, confirmPassword: true })
+
+    } else if (!email && !confirmPassword) {
+      if (!password.match(regex.password)) {
+        setHelperTextMessage({ ...helperTextMessage, password: "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'" })
+        setHandleErrors({ email: true, password: true, confirmPassword: true })
+      } else {
+        setHelperTextMessage({ ...helperTextMessage, password: "" })
+        setHandleErrors({ email: true, password: false, confirmPassword: true })
+      }
+    } else if (!password && !confirmPassword) {
+      if (!email.match(regex.email)) {
+        setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" })
+        setHandleErrors({ email: true, password: true, confirmPassword: true })
+      } else {
+        setHelperTextMessage({ ...helperTextMessage, email: "" })
+        setHandleErrors({ email: false, password: true, confirmPassword: true })
+      }
+
+    } else if (!email) {
+      if (!password.match(regex.password)) {
+        if (confirmPassword !== password) {
+          setHelperTextMessage({ ...helperTextMessage, password: "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'", confirmPassword: "Confirm password doesn't match" })
+          setHandleErrors({ email: true, password: true, confirmPassword: true })
+        } else {
+          setHelperTextMessage({ ...helperTextMessage, password: "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'", confirmPassword: "" })
+          setHandleErrors({ email: true, password: true, confirmPassword: false })
+        }
+      } else {
+        if (confirmPassword !== password) {
+          setHelperTextMessage({ ...helperTextMessage, confirmPassword: "Confirm password doesn't match" })
+          setHandleErrors({ email: true, password: false, confirmPassword: true })
+        } else {
+          setHelperTextMessage({ ...helperTextMessage, confirmPassword: "" })
+          setHandleErrors({ email: true, password: false, confirmPassword: false })
+        }
+        // setHelperTextMessage({ ...helperTextMessage, email: "Email is required" })
+        // setHandleErrors({ email: true, password: false, confirmPassword: false })
+
+      }
+    }
+    else if (!password) { }
+    else if (!confirmPassword) {
 
     }
-    else if (email.match(regex.email) && !password.match(regex.password) && confirmPassword !== password) {
-      setHelperTextMessage({ email: "", password: "password must contains 'One UpperCase letter, One lowerCase letter and should be of atleast 8 characters'", confirmPassword: "Confirm password doesn't match" })
-      setHandleErrors({ email: false, password: true, confirmPassword: true });
-
-    } else if (email.match(regex.email) && password.match(regex.password) && confirmPassword !== password) {
-      setHelperTextMessage({ email: "", password: "", confirmPassword: "Confirm password  doesn't match" })
-      setHandleErrors({ email: false, password: false, confirmPassword: true });
-
-    }
-    else if (email.match(regex.email) && password === "" && confirmPassword === "") {
-      setHandleErrors({ email: false, password: true, confirmPassword: true });
-    }
-    else if (email === "" && password !== "" && confirmPassword === "") {
-      setHandleErrors({ email: true, password: false, confirmPassword: true });
-    } else if (email !== "" && password === "" && confirmPassword !== "") {
-      setHandleErrors({ email: false, password: true, confirmPassword: false });
-    } else if (email !== "" && password !== "" && confirmPassword === "") {
-      setHandleErrors({ email: false, password: false, confirmPassword: true });
-    } else if (!email.match(regex.email)) {
-      setHandleErrors({ ...handleErrors, email: true });
-    }
-    else if (!password.match(regex.password)) {
-      setHandleErrors({ ...handleErrors, password: true });
-    } else if (confirmPassword !== password) {
-      setHandleErrors({ ...handleErrors, confirmPassword: true });
-    }
-
     else if (userExists) {
       setAlertMessage({
         message: (<span>
@@ -191,16 +240,16 @@ export default function SignUp() {
       });
     } else {
       setFlag(false);
-      setCurrentUser(data);
-      addData({
-        userId: data.userId,
-        email: data.email,
-        password: data.password,
-        contacts: [],
-      });
+      // setCurrentUser(data);
+      // addData({
+      //   userId: data.userId,
+      //   email: data.email,
+      //   password: data.password,
+      //   contacts: [],
+      // });
 
-      context.setIsUserLoggedIn(true);
-      navigate("/contact-list");
+      // context.setIsUserLoggedIn(true);
+      // navigate("/contact-list");
 
       context.setAlertMessageData({
         message: "Signed Up Successfully!!",
