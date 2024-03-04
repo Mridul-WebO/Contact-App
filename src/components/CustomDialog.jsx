@@ -13,9 +13,9 @@ import {
   CssBaseline,
   TextField,
 } from "@mui/material";
-import getUniqueId from "./uniqueId";
+
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { regex } from "./regex";
+import { regex, getUniqueId } from "../utils/helperFunctions";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -47,26 +47,35 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
     }
   );
 
-  const [flag, setFlag] = React.useState(false);
+  const [onChangeValidation, setOnChangeValidation] = React.useState(false);
+
   const [handleErrors, setHandleErrors] = React.useState({
-    name: false,
-    email: false,
-    phoneNumber: false,
+    name: { show: false, message: "Name is required" },
+    email: { show: false, message: "Email is required" },
+    phoneNumber: { show: false, message: "Phone number is required" },
   });
-  const [helperTextMessage, setHelperTextMessage] = React.useState({
-    email: "Email is required",
-    phoneNumber: "Phone number is required",
-  });
+
+  // const [helperTextMessage, setHelperTextMessage] = React.useState({
+  //   email: "Email is required",
+  //   phoneNumber: "Phone number is required",
+  // });
 
   function handleContactData(e) {
     setUserContact({ ...userContact, [e.target.name]: e.target.value });
-    if (flag) {
+
+    if (onChangeValidation) {
       switch (e.target.name) {
         case "name":
           if (e.target.value === "") {
-            setHandleErrors({ ...handleErrors, name: true });
+            setHandleErrors({
+              ...handleErrors,
+              name: { ...handleErrors, show: true },
+            });
           } else if (e.target.value !== "") {
-            setHandleErrors({ ...handleErrors, name: false });
+            setHandleErrors({
+              ...handleErrors,
+              name: { ...handleErrors, show: false },
+            });
           }
           break;
         case "email":
@@ -117,88 +126,145 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
 
   function handleNewContact(event) {
     event.preventDefault();
-    setFlag(true);
+    setOnChangeValidation(true);
 
     const { name, email, phoneNumber } = userContact;
 
     if (!name && !email && !phoneNumber) {
-      setHandleErrors({ name: true, email: true, phoneNumber: true });
+      setHandleErrors({
+        name: { ...handleErrors.name, show: true },
+        email: { ...handleErrors.email, show: true },
+        phoneNumber: { ...handleErrors.phoneNumber, show: true },
+      });
     } else if (!name && !email) {
       if (!phoneNumber.match(regex.phoneNumber)) {
-        setHelperTextMessage({
-          ...helperTextMessage,
-          phoneNumber: "Please enter a valid 10 digit phone number",
+        setHandleErrors({
+          phoneNumber: {
+            show: true,
+            message: "Please enter a valid 10 digit phone number",
+          },
+          email: { ...handleErrors.email, show: true },
+          name: { ...handleErrors.name, show: true },
         });
-        setHandleErrors({ name: true, email: true, phoneNumber: true });
       } else {
-        setHandleErrors({ name: true, email: true, phoneNumber: false });
+        setHandleErrors({
+          phoneNumber: { ...handleErrors.phoneNumber, show: true },
+          email: { ...handleErrors.email, show: true },
+          name: { ...handleErrors.name, show: true },
+        });
       }
     } else if (!name && !phoneNumber) {
       if (!email.match(regex.email)) {
-        setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" });
-        setHandleErrors({ name: true, email: true, phoneNumber: true });
+        setHandleErrors({
+          name: { ...handleErrors.name, show: true },
+          email: {
+            ...handleErrors.email,
+            show: true,
+            message: "Invalid email",
+          },
+          phoneNumber: { ...handleErrors.phoneNumber, show: true },
+        });
       } else {
-        setHandleErrors({ name: true, email: false, phoneNumber: true });
+        setHandleErrors({
+          name: { ...handleErrors.name, show: true },
+          email: { ...handleErrors.email, show: false },
+          phoneNumber: { ...handleErrors.phoneNumber, show: true },
+        });
       }
     } else if (!email && !phoneNumber) {
-      setHandleErrors({ name: false, email: true, phoneNumber: true });
+      setHandleErrors({
+        name: { ...handleErrors.name, show: false },
+        email: { ...handleErrors.email, show: true },
+        phoneNumber: { ...handleErrors.phoneNumber, show: true },
+      });
     } else if (
       !email.match(regex.email) &&
       !phoneNumber.match(regex.phoneNumber)
     ) {
       if (!phoneNumber) {
-        setHelperTextMessage({
-          ...helperTextMessage,
-          email: "Invalid email",
-          phoneNumber: "Phone number is required",
+        setHandleErrors({
+          ...handleErrors,
+          email: {
+            ...handleErrors.email,
+            show: true,
+            message: "Invalid email",
+          },
+          phoneNumber: {
+            ...handleErrors.phoneNumber,
+            show: true,
+            message: "Phone number is required",
+          },
         });
-        setHandleErrors({ ...handleErrors, email: true, phoneNumber: true });
       } else {
-        setHelperTextMessage({
-          ...helperTextMessage,
-          email: "Invalid email",
-          phoneNumber: "Please enter a valid 10 digit phone number",
+        setHandleErrors({
+          ...handleErrors,
+          email: {
+            ...handleErrors.email,
+            show: true,
+            message: "Invalid email",
+          },
+          phoneNumber: {
+            ...handleErrors.phoneNumber,
+            show: true,
+            message: "Please enter a valid 10 digit phone number",
+          },
         });
-        setHandleErrors({ ...handleErrors, email: true, phoneNumber: true });
       }
     } else if (
       !email.match(regex.email) &&
       phoneNumber.match(regex.phoneNumber)
     ) {
       if (!email) {
-        setHelperTextMessage({
-          ...helperTextMessage,
-          email: "Email is required",
-          phoneNumber: "",
+        setHandleErrors({
+          ...handleErrors,
+          email: {
+            show: true,
+            message: "Email is required",
+          },
+          phoneNumber: {
+            show: false,
+            message: "",
+          },
         });
-        setHandleErrors({ ...handleErrors, email: true, phoneNumber: false });
       } else {
-        setHelperTextMessage({
-          ...helperTextMessage,
-          email: "Invalid email",
-          phoneNumber: "",
+        setHandleErrors({
+          ...handleErrors,
+          email: {
+            show: true,
+            message: "Invalid email",
+          },
+          phoneNumber: {
+            show: false,
+            message: "",
+          },
         });
-        setHandleErrors({ ...handleErrors, email: true, phoneNumber: false });
       }
     } else if (!phoneNumber.match(regex.phoneNumber)) {
       if (!phoneNumber) {
-        setHelperTextMessage({
-          ...helperTextMessage,
-          phoneNumber: "Phone number is required",
+        setHandleErrors({
+          ...handleErrors,
+          phoneNumber: {
+            show: true,
+            message: "",
+          },
         });
-        setHandleErrors({ ...handleErrors, phoneNumber: true });
       } else {
-        setHelperTextMessage({
-          ...helperTextMessage,
-          phoneNumber: "Please enter a valid 10 digit phone number",
+        setHandleErrors({
+          ...handleErrors,
+          phoneNumber: {
+            show: true,
+            message: "Please enter a valid 10 digit phone number",
+          },
         });
-        setHandleErrors({ ...handleErrors, phoneNumber: true });
       }
     } else if (!name) {
-      setHandleErrors({ ...handleErrors, name: true });
+      setHandleErrors({
+        ...handleErrors,
+        name: { ...handleErrors.name, show: true },
+      });
     } else {
       onSubmit(userContact);
-      setFlag(false);
+      setOnChangeValidation(false);
     }
   }
 
@@ -284,10 +350,12 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                   name="email"
                   autoComplete="email"
                   autoFocus
-                  value={userContact?.email}
+                  value={userContact?.email.show}
                   onChange={handleContactData}
-                  error={handleErrors.email}
-                  helperText={handleErrors.email && helperTextMessage.email}
+                  error={handleErrors.email.show}
+                  helperText={
+                    handleErrors.email.show && handleErrors.email.message
+                  }
                 />
                 <TextField
                   margin="normal"
@@ -298,11 +366,12 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                   name="phoneNumber"
                   autoComplete="phoneNumber"
                   autoFocus
-                  value={userContact?.phoneNumber}
+                  value={userContact?.phoneNumber.show}
                   onChange={handleContactData}
-                  error={handleErrors.phoneNumber}
+                  error={handleErrors.phoneNumber.show}
                   helperText={
-                    handleErrors.phoneNumber && helperTextMessage.phoneNumber
+                    handleErrors.phoneNumber.show &&
+                    handleErrors.phoneNumber.message
                   }
                 />
 

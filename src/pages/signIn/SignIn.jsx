@@ -2,14 +2,12 @@ import "./SignIn.css";
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -17,8 +15,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Alert, InputAdornment } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
 import { getData, setCurrentUser } from "../../storage/Storage";
-
-const defaultTheme = createTheme();
+import { regex } from "../../utils/helperFunctions";
 
 export default function SignIn() {
   const signInBtnRef = React.useRef(null);
@@ -32,56 +29,56 @@ export default function SignIn() {
   });
 
   const [showPassword, setShowPassword] = React.useState(false);
-  const [flag, setFlag] = React.useState(false);
+  const [onChangeValidation, setOnChangeValidation] = React.useState(false);
 
-  const [data, setData] = React.useState({
+  const [formData, setFormData] = React.useState({
     email: "",
     password: "",
   });
 
   const [handleErrors, setHandleErrors] = React.useState({
-    email: false,
-    password: false,
-  });
-
-  const [helperTextMessage, setHelperTextMessage] = React.useState({
-    email: "Email is required",
-    password: "Password is required",
+    email: { show: false, message: "Email is required" },
+    password: { show: false, message: "Password is required" },
   });
 
   function handleData(e) {
-    setData({ ...data, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    if (flag) {
+    if (onChangeValidation) {
       switch (e.target.name) {
         case "email":
           if (!e.target.value) {
-            setHelperTextMessage({
-              ...helperTextMessage,
-              email: "Email is required",
+            console.log("hello");
+            setHandleErrors({
+              ...handleErrors,
+              email: {
+                show: true,
+                message: "Email is required",
+              },
             });
-            setHandleErrors({ ...handleErrors, email: true });
           } else if (!e.target.value.match(regex.email)) {
-            setHelperTextMessage({
-              ...helperTextMessage,
-              email: "Invalid email",
+            setHandleErrors({
+              ...handleErrors,
+              email: { show: true, message: "Invalid email" },
             });
-            setHandleErrors({ ...handleErrors, email: true });
           } else {
-            setHelperTextMessage({ ...helperTextMessage, email: "" });
-            setHandleErrors({ ...handleErrors, email: false });
+            setHandleErrors({
+              ...handleErrors,
+              email: { show: false, message: "" },
+            });
           }
           break;
         case "password":
           if (!e.target.value) {
-            setHelperTextMessage({
-              ...helperTextMessage,
-              password: "Password is required",
+            setHandleErrors({
+              ...handleErrors,
+              password: { show: true, message: "Password is required" },
             });
-            setHandleErrors({ ...handleErrors, password: true });
           } else {
-            setHelperTextMessage({ ...helperTextMessage, password: "" });
-            setHandleErrors({ ...handleErrors, password: false });
+            setHandleErrors({
+              ...handleErrors,
+              password: { show: false, message: "" },
+            });
           }
           break;
         default:
@@ -95,17 +92,17 @@ export default function SignIn() {
   }
 
   React.useEffect(() => {
-    const a = signInBtnRef.current;
+    const signInBtn = signInBtnRef.current;
     document.addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
-        a?.click();
+        signInBtn?.click();
       }
     });
 
     return () => {
       document.removeEventListener("keypress", (e) => {
         if (e.key === "Enter") {
-          a?.click();
+          signInBtn?.click();
         }
       });
     };
@@ -113,26 +110,56 @@ export default function SignIn() {
 
   function handleSignIn(event) {
     event.preventDefault();
-    setFlag(true);
-    const user = getData().find((user) => user.email === data.email);
+    setOnChangeValidation(true);
 
-    const { email, password } = data;
+    //  Yup validation
+    // try {
+    //   await validateForm(formData);
+    //   console.log(formData);
+    // } catch (error) {
+    //   console.log(error.inner);
+    //   const newErrors = {};
+    //   error.inner.forEach((err) => {
+    //     newErrors[err.path] = err.message;
+    //   });
+
+    //   setErrors(newErrors);
+    // }
+    const user = getData().find((user) => user.email === formData.email);
+
+    const { email, password } = formData;
 
     if (!email && !password) {
-      setHandleErrors({ email: true, password: true });
+      console.log(handleErrors);
+      setHandleErrors({
+        ...handleErrors,
+        email: { ...handleErrors.email, show: true },
+        password: { ...handleErrors.password, show: true },
+      });
     } else if (!email) {
-      setHandleErrors({ email: true, password: false });
+      setHandleErrors({
+        ...handleErrors,
+        email: { ...handleErrors.email, show: true },
+        password: { ...handleErrors.password, show: false },
+      });
     } else if (!password) {
       if (!email.match(regex.email)) {
-        setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" });
-        setHandleErrors({ email: true, password: true });
+        setHandleErrors({
+          ...handleErrors,
+          email: { show: true, message: "Invalid email" },
+          password: { ...handleErrors.password, show: true },
+        });
       } else {
-        setHelperTextMessage({ ...helperTextMessage, email: "" });
-        setHandleErrors({ email: false, password: true });
+        setHandleErrors({
+          ...handleErrors,
+          email: { show: false, message: "" },
+        });
       }
     } else if (!email.match(regex.email)) {
-      setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" });
-      setHandleErrors({ ...handleErrors, email: true });
+      setHandleErrors({
+        ...handleErrors,
+        email: { show: true, message: "Invalid email" },
+      });
     } else if (!user) {
       setAlertMessage({
         message: (
@@ -143,14 +170,14 @@ export default function SignIn() {
         type: "error",
         open: true,
       });
-    } else if (data.password !== user.password) {
+    } else if (formData.password !== user.password) {
       setAlertMessage({
         message: "Invalid password",
         type: "error",
         open: true,
       });
     } else {
-      setFlag(false);
+      setOnChangeValidation(false);
       setCurrentUser(user);
       context.setIsUserLoggedIn(true);
       navigate("/contact-list");
@@ -164,96 +191,95 @@ export default function SignIn() {
   }
 
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-          className="signInContainer"
-        >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign In
-          </Typography>
-          {alertMessage.open && (
-            <Alert sx={{ width: "100%" }} severity={alertMessage.type}>
-              {alertMessage.message}
-            </Alert>
-          )}
-          <Box sx={{ mt: 1 }} component="form">
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={data.email}
-              onChange={handleData}
-              error={handleErrors.email}
-              helperText={handleErrors.email && helperTextMessage.email}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              id="password"
-              autoComplete="current-password"
-              value={data.password}
-              onChange={handleData}
-              error={handleErrors.password}
-              helperText={handleErrors.password && helperTextMessage.password}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">
-                    {showPassword ? (
-                      <VisibilityIcon
-                        style={{ cursor: "pointer" }}
-                        onClick={() => setShowPassword(false)}
-                      />
-                    ) : (
-                      <VisibilityOffIcon
-                        style={{ cursor: "pointer" }}
-                        onClick={() => setShowPassword(true)}
-                      />
-                    )}
-                  </InputAdornment>
-                ),
-              }}
-            />
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+        className="signInContainer"
+      >
+        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign In
+        </Typography>
+        {alertMessage.open && (
+          <Alert sx={{ width: "100%" }} severity={alertMessage.type}>
+            {alertMessage.message}
+          </Alert>
+        )}
+        <Box sx={{ mt: 1 }} component="form">
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={formData.email}
+            onChange={handleData}
+            error={handleErrors.email.show}
+            helperText={handleErrors.email.show && handleErrors.email.message}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            id="password"
+            autoComplete="current-password"
+            value={formData.password}
+            onChange={handleData}
+            error={handleErrors.password.show}
+            helperText={
+              handleErrors.password.show && handleErrors.password.message
+            }
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="start">
+                  {showPassword ? (
+                    <VisibilityIcon
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setShowPassword(false)}
+                    />
+                  ) : (
+                    <VisibilityOffIcon
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setShowPassword(true)}
+                    />
+                  )}
+                </InputAdornment>
+              ),
+            }}
+          />
 
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              ref={signInBtnRef}
-              onClick={handleSignIn}
-            >
-              Sign In
-            </Button>
-            <Grid container>
-              <Grid item xs></Grid>
-              <Grid item>
-                <Link to="/sign-up" variant="body2">
-                  {"Don't have an account?? Sign Up"}
-                </Link>
-              </Grid>
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            ref={signInBtnRef}
+            onClick={handleSignIn}
+          >
+            Sign In
+          </Button>
+          <Grid container>
+            <Grid item xs></Grid>
+            <Grid item>
+              <Link to="/sign-up" variant="body2">
+                {"Don't have an account?? Sign Up"}
+              </Link>
             </Grid>
-          </Box>
+          </Grid>
         </Box>
-      </Container>
-    </ThemeProvider>
+      </Box>
+    </Container>
   );
 }

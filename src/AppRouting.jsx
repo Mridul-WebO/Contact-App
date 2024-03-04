@@ -1,13 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
-import App from "../App";
-import SignIn from "../pages/signIn/SignIn.jsx";
-import SignUp from "./../pages/signUp/SignUp";
-import ProtectedRoute from "./../components/ProtectedRoute";
-import ContactList from "./../pages/contactList/ContactList";
-import Authenticate from "./../components/Authenticate";
-import ErrorPage from "../pages/errorPage/ErrorPage.jsx";
+import App from "./App";
+import SignIn from "./pages/signIn/SignIn";
+import SignUp from "./pages/signUp/SignUp";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ContactList from "./pages/contactList/ContactList";
+import Authenticate from "./components/Authenticate";
+import ErrorPage from "./pages/errorPage/ErrorPage";
 
-const router = createBrowserRouter([
+const AppRouting = createBrowserRouter([
   {
     path: "/",
     element: <App />,
@@ -43,4 +43,4 @@ const router = createBrowserRouter([
   },
 ]);
 
-export default router;
+export default AppRouting;

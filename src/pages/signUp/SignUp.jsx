@@ -9,17 +9,15 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Alert, InputAdornment } from "@mui/material";
 import { addData, getData, setCurrentUser } from "../../storage/Storage";
-import getUniqueId from "../../components/uniqueId";
 import { useOutletContext } from "react-router-dom";
-import { regex } from "../../components/regex";
-const defaultTheme = createTheme();
+import { regex, getUniqueId } from "../../utils/helperFunctions";
 
 export default function SignUp() {
   const signUpBtnRef = React.useRef(null);
@@ -29,7 +27,7 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [flag, setFlag] = React.useState(false);
 
-  const [data, setData] = React.useState({
+  const [formData, setFormData] = React.useState({
     userId: getUniqueId(),
     email: "",
     password: "",
@@ -52,7 +50,7 @@ export default function SignUp() {
     open: false,
   });
   function handleData(e) {
-    setData({ ...data, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
     if (flag) {
       switch (e.target.name) {
@@ -102,13 +100,13 @@ export default function SignUp() {
               confirmPassword: "Confirm password is required",
             });
             setHandleErrors({ ...handleErrors, confirmPassword: true });
-          } else if (e.target.value !== data.password) {
+          } else if (e.target.value !== formData.password) {
             setHelperTextMessage({
               ...helperTextMessage,
               confirmPassword: "Confirm password doesn't match",
             });
             setHandleErrors({ ...handleErrors, confirmPassword: true });
-          } else if (e.target.value === data.password) {
+          } else if (e.target.value === formData.password) {
             setHelperTextMessage({ ...helperTextMessage, confirmPassword: "" });
             setHandleErrors({ ...handleErrors, confirmPassword: false });
           }
@@ -134,7 +132,7 @@ export default function SignUp() {
     event.preventDefault();
     setFlag(true);
 
-    const { email, password, confirmPassword } = data;
+    const { email, password, confirmPassword } = formData;
 
     const userExists = getData().some((user) => user.email === email);
 
@@ -387,11 +385,11 @@ export default function SignUp() {
       });
     } else {
       setFlag(false);
-      setCurrentUser(data);
+      setCurrentUser(formData);
       addData({
-        userId: data.userId,
-        email: data.email,
-        password: data.password,
+        userId: formData.userId,
+        email: formData.email,
+        password: formData.password,
         contacts: [],
       });
 
@@ -407,113 +405,110 @@ export default function SignUp() {
   }
 
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-          className="signUpContainer"
-        >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign Up
-          </Typography>
-          {alertMessage.open && (
-            <Alert sx={{ width: "100%" }} severity={alertMessage.type}>
-              {alertMessage.message}
-            </Alert>
-          )}
-          <Box component="form" sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={data.email}
-              onChange={handleData}
-              error={handleErrors.email}
-              helperText={handleErrors.email && helperTextMessage.email}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              id="password"
-              autoComplete="current-password"
-              value={data.password}
-              onChange={handleData}
-              error={handleErrors.password}
-              helperText={handleErrors.password && helperTextMessage.password}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">
-                    {showPassword ? (
-                      <VisibilityIcon
-                        style={{ cursor: "pointer" }}
-                        onClick={() => setShowPassword(false)}
-                      />
-                    ) : (
-                      <VisibilityOffIcon
-                        style={{ cursor: "pointer" }}
-                        onClick={() => setShowPassword(true)}
-                      />
-                    )}
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="confirmPassword"
-              label="Confirm Password"
-              type={showPassword ? "text" : "password"}
-              id="confirmPassword"
-              autoComplete="current-password"
-              value={data.confirmPassword}
-              onChange={handleData}
-              error={handleErrors.confirmPassword}
-              helperText={
-                handleErrors.confirmPassword &&
-                helperTextMessage.confirmPassword
-              }
-            />
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+        className="signUpContainer"
+      >
+        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign Up
+        </Typography>
+        {alertMessage.open && (
+          <Alert sx={{ width: "100%" }} severity={alertMessage.type}>
+            {alertMessage.message}
+          </Alert>
+        )}
+        <Box component="form" sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={formData.email}
+            onChange={handleData}
+            error={handleErrors.email}
+            helperText={handleErrors.email && helperTextMessage.email}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            id="password"
+            autoComplete="current-password"
+            value={formData.password}
+            onChange={handleData}
+            error={handleErrors.password}
+            helperText={handleErrors.password && helperTextMessage.password}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="start">
+                  {showPassword ? (
+                    <VisibilityIcon
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setShowPassword(false)}
+                    />
+                  ) : (
+                    <VisibilityOffIcon
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setShowPassword(true)}
+                    />
+                  )}
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="confirmPassword"
+            label="Confirm Password"
+            type={showPassword ? "text" : "password"}
+            id="confirmPassword"
+            autoComplete="current-password"
+            value={formData.confirmPassword}
+            onChange={handleData}
+            error={handleErrors.confirmPassword}
+            helperText={
+              handleErrors.confirmPassword && helperTextMessage.confirmPassword
+            }
+          />
 
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              ref={signUpBtnRef}
-              onClick={handleSignUp}
-            >
-              Sign Up
-            </Button>
-            <Grid container>
-              <Grid item xs></Grid>
-              <Grid item>
-                <Link to="/" variant="body2">
-                  {"Already a user? Sign In"}
-                </Link>
-              </Grid>
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            ref={signUpBtnRef}
+            onClick={handleSignUp}
+          >
+            Sign Up
+          </Button>
+          <Grid container>
+            <Grid item xs></Grid>
+            <Grid item>
+              <Link to="/" variant="body2">
+                {"Already a user? Sign In"}
+              </Link>
             </Grid>
-          </Box>
+          </Grid>
         </Box>
-      </Container>
-    </ThemeProvider>
+      </Box>
+    </Container>
   );
 }
