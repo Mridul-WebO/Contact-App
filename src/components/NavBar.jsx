@@ -10,6 +10,7 @@ import { removeCurrentUser } from "../storage/Storage";
 
 function NavBar({ setIsUserLoggedIn, setAlertMessageData }) {
   const navigate = useNavigate();
+
   function handleLogOut(event) {
     event.preventDefault();
 
@@ -46,7 +47,7 @@ function NavBar({ setIsUserLoggedIn, setAlertMessageData }) {
           </Typography>
 
           <Typography
-            variant="h5"
+            variant="h6"
             noWrap
             component="a"
             sx={{

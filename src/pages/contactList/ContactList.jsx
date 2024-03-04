@@ -7,10 +7,20 @@ import BasicTable from "../../components/Table";
 
 const defaultTheme = createTheme();
 
+// const cols = [
+// {
+//   key: 'userId',
+//   title: 'UserID',
+//   render: (row)=>{
+//     retunr <Box><
+//   }
+// },
+// ];
+
 export default function ContactList() {
   return (
     <ThemeProvider theme={defaultTheme}>
-      <BasicTable />
+      <BasicTable rows={rows} />
     </ThemeProvider>
   );
 }

@@ -17,7 +17,6 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Alert, InputAdornment } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
 import { getData, setCurrentUser } from "../../storage/Storage";
-import { regex } from "../../components/regex";
 
 const defaultTheme = createTheme();
 
@@ -45,8 +44,10 @@ export default function SignIn() {
     password: false,
   });
 
-  const [helperTextMessage, setHelperTextMessage] =
-    React.useState({ email: "Email is required", password: "Password is required" });
+  const [helperTextMessage, setHelperTextMessage] = React.useState({
+    email: "Email is required",
+    password: "Password is required",
+  });
 
   function handleData(e) {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -55,24 +56,35 @@ export default function SignIn() {
       switch (e.target.name) {
         case "email":
           if (!e.target.value) {
-            setHelperTextMessage({ ...helperTextMessage, email: "Email is required" })
+            setHelperTextMessage({
+              ...helperTextMessage,
+              email: "Email is required",
+            });
             setHandleErrors({ ...handleErrors, email: true });
           } else if (!e.target.value.match(regex.email)) {
-            setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" })
+            setHelperTextMessage({
+              ...helperTextMessage,
+              email: "Invalid email",
+            });
             setHandleErrors({ ...handleErrors, email: true });
           } else {
-            setHelperTextMessage({ ...helperTextMessage, email: "" })
+            setHelperTextMessage({ ...helperTextMessage, email: "" });
             setHandleErrors({ ...handleErrors, email: false });
           }
           break;
         case "password":
           if (!e.target.value) {
-            setHelperTextMessage({ ...helperTextMessage, password: "Password is required" })
+            setHelperTextMessage({
+              ...helperTextMessage,
+              password: "Password is required",
+            });
             setHandleErrors({ ...handleErrors, password: true });
           } else {
-            setHelperTextMessage({ ...helperTextMessage, password: "" })
+            setHelperTextMessage({ ...helperTextMessage, password: "" });
             setHandleErrors({ ...handleErrors, password: false });
           }
+          break;
+        default:
           break;
       }
     }
@@ -83,22 +95,21 @@ export default function SignIn() {
   }
 
   React.useEffect(() => {
+    const a = signInBtnRef.current;
     document.addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
-        signInBtnRef.current?.click();
+        a?.click();
       }
     });
 
     return () => {
       document.removeEventListener("keypress", (e) => {
         if (e.key === "Enter") {
-          signInBtnRef.current?.click();
+          a?.click();
         }
       });
-    }
-  }, [])
-
-
+    };
+  }, []);
 
   function handleSignIn(event) {
     event.preventDefault();
@@ -107,28 +118,31 @@ export default function SignIn() {
 
     const { email, password } = data;
 
-
     if (!email && !password) {
       setHandleErrors({ email: true, password: true });
     } else if (!email) {
       setHandleErrors({ email: true, password: false });
     } else if (!password) {
       if (!email.match(regex.email)) {
-        setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" })
+        setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" });
         setHandleErrors({ email: true, password: true });
       } else {
-        setHelperTextMessage({ ...helperTextMessage, email: "" })
+        setHelperTextMessage({ ...helperTextMessage, email: "" });
         setHandleErrors({ email: false, password: true });
       }
+    } else if (!email.match(regex.email)) {
+      setHelperTextMessage({ ...helperTextMessage, email: "Invalid email" });
+      setHandleErrors({ ...handleErrors, email: true });
     } else if (!user) {
       setAlertMessage({
-        message: (<span>
-          User doesn't exists. Please <Link to="/sign-up">Sign Up</Link>
-        </span>),
+        message: (
+          <span>
+            User doesn't exists. Please <Link to="/sign-up">Sign Up</Link>
+          </span>
+        ),
         type: "error",
         open: true,
       });
-
     } else if (data.password !== user.password) {
       setAlertMessage({
         message: "Invalid password",
