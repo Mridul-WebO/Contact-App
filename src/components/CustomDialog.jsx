@@ -80,38 +80,42 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
           break;
         case "email":
           if (e.target.value === "") {
-            setHelperTextMessage({
-              ...helperTextMessage,
-              email: "Email is required",
+            setHandleErrors({
+              ...handleErrors,
+              email: { show: true, message: "Email is required" },
             });
-            setHandleErrors({ ...handleErrors, email: true });
           } else if (!e.target.value.match(regex.email)) {
-            setHelperTextMessage({
-              ...helperTextMessage,
-              email: "Invalid email",
+            setHandleErrors({
+              ...handleErrors,
+              email: { show: true, message: "Invalid Email" },
             });
-            setHandleErrors({ ...handleErrors, email: true });
           } else if (e.target.value.match(regex.email)) {
-            setHelperTextMessage({ ...helperTextMessage, email: "" });
-            setHandleErrors({ ...handleErrors, email: false });
+            setHandleErrors({
+              ...handleErrors,
+              email: { show: false, message: "" },
+            });
           }
+
           break;
         case "phoneNumber":
           if (e.target.value === "") {
-            setHelperTextMessage({
-              ...helperTextMessage,
-              phoneNumber: "Phone number is required",
+            setHandleErrors({
+              ...handleErrors,
+              phoneNumber: { show: true, message: "Phone number is required" },
             });
-            setHandleErrors({ ...handleErrors, phoneNumber: true });
           } else if (!e.target.value.match(regex.phoneNumber)) {
-            setHelperTextMessage({
-              ...helperTextMessage,
-              phoneNumber: "Please enter a valid 10 digit phone number",
+            setHandleErrors({
+              ...handleErrors,
+              phoneNumber: {
+                show: true,
+                message: "Please enter a valid 10 digit phone number",
+              },
             });
-            setHandleErrors({ ...handleErrors, phoneNumber: true });
           } else if (e.target.value.match(regex.phoneNumber)) {
-            setHelperTextMessage({ ...helperTextMessage, phoneNumber: "" });
-            setHandleErrors({ ...handleErrors, phoneNumber: false });
+            setHandleErrors({
+              ...handleErrors,
+              phoneNumber: { show: false, message: "" },
+            });
           }
           break;
         default:
@@ -338,8 +342,10 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                   autoFocus
                   value={userContact?.name}
                   onChange={handleContactData}
-                  error={handleErrors.name}
-                  helperText={handleErrors.name && "Name is required"}
+                  error={handleErrors.name.show}
+                  helperText={
+                    handleErrors.name.show && handleErrors.name.message
+                  }
                 />
                 <TextField
                   margin="normal"

@@ -13,16 +13,6 @@ import AddIcon from "@mui/icons-material/Add";
 import { exportContacts, importContacts } from "../../utils/helperFunctions";
 import CustomDialog from "../../components/CustomDialog";
 
-// const cols = [
-// {
-//   key: 'userId',
-//   title: 'UserID',
-//   render: (row)=>{
-//     retunr <Box><
-//   }
-// },
-// ];
-
 export default function ContactList() {
   const importRef = React.useRef(null);
   const contacts = fetchContactsDetails();
@@ -31,6 +21,8 @@ export default function ContactList() {
   const [rows, setRows] = React.useState(contacts);
   const [currentRow, setCurrentRow] = React.useState({});
   const [open, setOpen] = React.useState(false);
+
+  console.log(rows);
 
   React.useEffect(() => {
     if (!open) {
