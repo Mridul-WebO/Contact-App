@@ -22,8 +22,6 @@ export default function ContactList() {
   const [currentRow, setCurrentRow] = React.useState({});
   const [open, setOpen] = React.useState(false);
 
-  console.log(rows);
-
   React.useEffect(() => {
     if (!open) {
       setCurrentRow({
@@ -151,6 +149,7 @@ export default function ContactList() {
       });
     }
   };
+
   return (
     <>
       <Container>

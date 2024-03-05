@@ -47,6 +47,8 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
     }
   );
 
+  console.log({ userContact });
+
   const [onChangeValidation, setOnChangeValidation] = React.useState(false);
 
   const [handleErrors, setHandleErrors] = React.useState({
@@ -54,11 +56,6 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
     email: { show: false, message: "Email is required" },
     phoneNumber: { show: false, message: "Phone number is required" },
   });
-
-  // const [helperTextMessage, setHelperTextMessage] = React.useState({
-  //   email: "Email is required",
-  //   phoneNumber: "Phone number is required",
-  // });
 
   function handleContactData(e) {
     setUserContact({ ...userContact, [e.target.name]: e.target.value });
@@ -356,7 +353,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                   name="email"
                   autoComplete="email"
                   autoFocus
-                  value={userContact?.email.show}
+                  value={userContact?.email}
                   onChange={handleContactData}
                   error={handleErrors.email.show}
                   helperText={
@@ -372,7 +369,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                   name="phoneNumber"
                   autoComplete="phoneNumber"
                   autoFocus
-                  value={userContact?.phoneNumber.show}
+                  value={userContact?.phoneNumber}
                   onChange={handleContactData}
                   error={handleErrors.phoneNumber.show}
                   helperText={
