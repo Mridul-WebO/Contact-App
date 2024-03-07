@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import { useState } from "react";
 import SnackBar from "./components/SnackBar";
-import { fetchCurrentUser } from "./storage/Storage";
+// import { fetchCurrentUser } from "./storage/Storage";
 import { useSelector } from "react-redux";
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
     open: false,
   });
 
-  const userName = fetchCurrentUser()?.email.split("@")[0];
+  // const userName = fetchCurrentUser()?.email.split("@")[0];
 
   return (
     <>
@@ -33,7 +33,7 @@ function App() {
           setAlertMessageData,
           // isUserLoggedIn,
           // setIsUserLoggedIn,
-          userName,
+          // userName,
         }}
       />
       {alertMessageData.open && (

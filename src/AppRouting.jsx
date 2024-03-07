@@ -7,14 +7,17 @@ import ContactList from "./pages/contactList/ContactList";
 import Authenticate from "./components/Authenticate";
 import ErrorPage from "./pages/errorPage/ErrorPage";
 import { Provider } from "react-redux";
-import store from "./app/store";
+import store, { persistor } from "./app/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 const AppRouting = createBrowserRouter([
   {
     path: "/",
     element: (
       <Provider store={store}>
-        <App />
+        <PersistGate persistor={persistor}>
+          <App />
+        </PersistGate>
       </Provider>
     ),
     children: [

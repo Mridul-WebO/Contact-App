@@ -2,23 +2,31 @@ import * as React from "react";
 import BasicTable from "../../components/BasicTable";
 import { Button, Container, Fab, Typography } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
-import {
-  addContactDetails,
-  addImportedContactDetails,
-  deleteAllContacts,
-  editContact,
-  fetchContactsDetails,
-} from "../../storage/Storage";
+// import {
+//   addContactDetails,
+//   addImportedContactDetails,
+//   deleteAllContacts,
+//   editContact,
+//   fetchContactsDetails,
+// } from "../../storage/Storage";
 import AddIcon from "@mui/icons-material/Add";
-import { exportContacts, importContacts } from "../../utils/helperFunctions";
+// import { exportContacts, importContacts } from "../../utils/helperFunctions";
 import CustomDialog from "../../components/CustomDialog";
+import { useSelector } from "react-redux";
 
 export default function ContactList() {
+  const storeData = useSelector((state) => {
+    return {
+      currentUser: state.auth.currentUser,
+      // contactListData: state.registeredUsers.userData,
+    };
+  });
+
   const importRef = React.useRef(null);
-  const contacts = fetchContactsDetails();
+  // const contacts = fetchContactsDetails();
   const context = useOutletContext();
 
-  const [rows, setRows] = React.useState(contacts);
+  const [rows, setRows] = React.useState(storeData.contactListData || []);
   const [currentRow, setCurrentRow] = React.useState({});
   const [open, setOpen] = React.useState(false);
 
@@ -34,37 +42,37 @@ export default function ContactList() {
     }
   }, [open]);
 
-  const onSubmit = (submittedData) => {
-    const contacts = fetchContactsDetails();
-    const contactExits = contacts.some(
-      (contact) => contact.userId === submittedData.userId
-    );
+  // const onSubmit = (submittedData) => {
+  //   // const contacts = fetchContactsDetails();
+  //   const contactExits = contacts.some(
+  //     (contact) => contact.userId === submittedData.userId
+  //   );
 
-    if (!contactExits) {
-      setRows([submittedData, ...rows]);
-      addContactDetails(submittedData);
-    } else {
-      const data = rows.map((row) => {
-        if (row.userId === submittedData.userId) {
-          return submittedData;
-        }
-        return row;
-      });
-      setRows([...data]);
-      editContact(submittedData);
-    }
+  //   if (!contactExits) {
+  //     setRows([submittedData, ...rows]);
+  //     addContactDetails(submittedData);
+  //   } else {
+  //     const data = rows.map((row) => {
+  //       if (row.userId === submittedData.userId) {
+  //         return submittedData;
+  //       }
+  //       return row;
+  //     });
+  //     setRows([...data]);
+  //     editContact(submittedData);
+  //   }
 
-    setOpen(false);
+  //   setOpen(false);
 
-    context.setAlertMessageData({
-      message: !contactExits
-        ? "Contact added successfully!"
-        : "Contact updated successfully!",
-      type: "success",
-      hideDuration: 2000,
-      open: true,
-    });
-  };
+  //   context.setAlertMessageData({
+  //     message: !contactExits
+  //       ? "Contact added successfully!"
+  //       : "Contact updated successfully!",
+  //     type: "success",
+  //     hideDuration: 2000,
+  //     open: true,
+  //   });
+  // };
 
   const onClose = () => {
     setOpen(false);
@@ -72,7 +80,7 @@ export default function ContactList() {
 
   const handleDeleteAllContacts = () => {
     setRows([]);
-    deleteAllContacts();
+    // deleteAllContacts();
 
     context.setAlertMessageData({
       message: "Contacts deleted successfully!",
@@ -82,79 +90,79 @@ export default function ContactList() {
     });
   };
 
-  const handleImportContacts = (event) => {
-    const file = event.target.files[0];
-    const existingContacts = fetchContactsDetails();
+  // const handleImportContacts = (event) => {
+  //   const file = event.target.files[0];
+  //   // const existingContacts = fetchContactsDetails();
 
-    function handleImportRes(res) {
-      if (res.data) {
-        const newContacts = res.data.filter((newContact) => {
-          return !existingContacts.some((oldContact) => {
-            return parseInt(newContact.userId) === parseInt(oldContact.userId);
-          });
-        });
-        if (!newContacts[0]?.userId && newContacts?.length !== 0) {
-          context.setAlertMessageData({
-            message: "Error importing data. Please try again later.",
-            type: "error",
-            hideDuration: 2000,
-            open: true,
-          });
-        } else {
-          setRows([...newContacts, ...rows]);
-          addImportedContactDetails(newContacts);
+  //   function handleImportRes(res) {
+  //     if (res.data) {
+  //       const newContacts = res.data.filter((newContact) => {
+  //         return !existingContacts.some((oldContact) => {
+  //           return parseInt(newContact.userId) === parseInt(oldContact.userId);
+  //         });
+  //       });
+  //       if (!newContacts[0]?.userId && newContacts?.length !== 0) {
+  //         context.setAlertMessageData({
+  //           message: "Error importing data. Please try again later.",
+  //           type: "error",
+  //           hideDuration: 2000,
+  //           open: true,
+  //         });
+  //       } else {
+  //         setRows([...newContacts, ...rows]);
+  //         addImportedContactDetails(newContacts);
 
-          context.setAlertMessageData({
-            message:
-              newContacts?.length === 0
-                ? "Duplicate contacts Merged successfully"
-                : "Contacts imported successfully!",
-            type: "success",
-            hideDuration: 2000,
-            open: true,
-          });
-        }
-      } else {
-        context.setAlertMessageData({
-          message: "Couldn't import data. Please try again later.",
-          type: "error",
-          hideDuration: 2000,
-          open: true,
-        });
-      }
-    }
+  //         context.setAlertMessageData({
+  //           message:
+  //             newContacts?.length === 0
+  //               ? "Duplicate contacts Merged successfully"
+  //               : "Contacts imported successfully!",
+  //           type: "success",
+  //           hideDuration: 2000,
+  //           open: true,
+  //         });
+  //       }
+  //     } else {
+  //       context.setAlertMessageData({
+  //         message: "Couldn't import data. Please try again later.",
+  //         type: "error",
+  //         hideDuration: 2000,
+  //         open: true,
+  //       });
+  //     }
+  //   }
 
-    importContacts(file, handleImportRes);
+  //   importContacts(file, handleImportRes);
 
-    event.target.value = null;
-  };
+  //   event.target.value = null;
+  // };
 
-  const handleExportContacts = () => {
-    const existingContacts = fetchContactsDetails();
-    const fileName = "Contact-List";
-    const res = exportContacts(existingContacts, fileName);
-    if (res) {
-      context.setAlertMessageData({
-        message: "Contacts exported successfully!!",
-        type: "success",
-        hideDuration: 1500,
-        open: true,
-      });
-    } else {
-      context.setAlertMessageData({
-        message: "Couldn't export contacts. Pleas try again later.",
-        type: "error",
-        hideDuration: 1500,
-        open: true,
-      });
-    }
-  };
+  // const handleExportContacts = () => {
+  //   const existingContacts = fetchContactsDetails();
+  //   const fileName = "Contact-List";
+  //   const res = exportContacts(existingContacts, fileName);
+  //   if (res) {
+  //     context.setAlertMessageData({
+  //       message: "Contacts exported successfully!!",
+  //       type: "success",
+  //       hideDuration: 1500,
+  //       open: true,
+  //     });
+  //   } else {
+  //     context.setAlertMessageData({
+  //       message: "Couldn't export contacts. Pleas try again later.",
+  //       type: "error",
+  //       hideDuration: 1500,
+  //       open: true,
+  //     });
+  //   }
+  // };
 
   return (
     <>
       <Container>
         <Typography sx={{ my: 3, fontSize: 30 }}>
-          Welcome!! {context.userName}
+          Welcome!! {storeData.currentUser.email.split("@")[0]}
         </Typography>
       </Container>
       <Container sx={{ textAlign: "end" }}>
@@ -171,7 +179,7 @@ export default function ContactList() {
               color="primary"
               aria-label="add"
               sx={{ my: 1 }}
-              onClick={handleExportContacts}
+              // onClick={handleExportContacts}
             >
               <Typography sx={{ fontSize: 10 }}>Export data</Typography>
             </Fab>
@@ -189,7 +197,7 @@ export default function ContactList() {
             accept=".csv"
             style={{ display: "none" }}
             ref={importRef}
-            onChange={handleImportContacts}
+            // onChange={handleImportContacts}
           />
         </Fab>
         <Fab
@@ -205,7 +213,7 @@ export default function ContactList() {
           setRows={setRows}
           setCurrentRow={setCurrentRow}
           setOpen={setOpen}
-          contacts={contacts}
+          // contacts={contacts}
         />
       </Container>
 
@@ -213,7 +221,7 @@ export default function ContactList() {
         <CustomDialog
           open={open}
           data={currentRow}
-          onSubmit={onSubmit}
+          // onSubmit={onSubmit}
           onClose={onClose}
         />
       )}

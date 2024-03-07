@@ -14,11 +14,10 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Alert, InputAdornment } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
-import { getData } from "../../storage/Storage";
 import { regex } from "../../utils/helperFunctions";
 
 // redux
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userLoggedIn } from "../../features/auth/authSlice";
 
 export default function SignIn() {
@@ -26,6 +25,10 @@ export default function SignIn() {
   const signInBtnRef = React.useRef(null);
   const context = useOutletContext();
   const navigate = useNavigate();
+
+  const registeredUsersData = useSelector(
+    (state) => state.registeredUsers?.userData
+  );
 
   const [alertMessage, setAlertMessage] = React.useState({
     message: "",
@@ -116,6 +119,10 @@ export default function SignIn() {
     event.preventDefault();
     setOnChangeValidation(true);
 
+    const user = registeredUsersData?.find(
+      (user) => user.email === formData.email
+    );
+
     //  Yup validation
     // try {
     //   await validateForm(formData);
@@ -129,7 +136,6 @@ export default function SignIn() {
 
     //   setErrors(newErrors);
     // }
-    const user = getData().find((user) => user.email === formData.email);
 
     const { email, password } = formData;
 
@@ -182,7 +188,7 @@ export default function SignIn() {
     } else {
       setOnChangeValidation(false);
 
-      dispatch(userLoggedIn(user));
+      dispatch(userLoggedIn(formData));
 
       navigate("/contact-list");
       context.setAlertMessageData({
