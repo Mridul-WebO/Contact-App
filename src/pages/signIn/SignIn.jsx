@@ -14,10 +14,15 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Alert, InputAdornment } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
-import { getData, setCurrentUser } from "../../storage/Storage";
+import { getData } from "../../storage/Storage";
 import { regex } from "../../utils/helperFunctions";
 
+// redux
+import { useDispatch } from "react-redux";
+import { userLoggedIn } from "../../features/auth/authSlice";
+
 export default function SignIn() {
+  const dispatch = useDispatch();
   const signInBtnRef = React.useRef(null);
   const context = useOutletContext();
   const navigate = useNavigate();
@@ -48,7 +53,6 @@ export default function SignIn() {
       switch (e.target.name) {
         case "email":
           if (!e.target.value) {
-            console.log("hello");
             setHandleErrors({
               ...handleErrors,
               email: {
@@ -130,7 +134,6 @@ export default function SignIn() {
     const { email, password } = formData;
 
     if (!email && !password) {
-      console.log(handleErrors);
       setHandleErrors({
         ...handleErrors,
         email: { ...handleErrors.email, show: true },
@@ -178,10 +181,10 @@ export default function SignIn() {
       });
     } else {
       setOnChangeValidation(false);
-      setCurrentUser(user);
-      context.setIsUserLoggedIn(true);
-      navigate("/contact-list");
 
+      dispatch(userLoggedIn(user));
+
+      navigate("/contact-list");
       context.setAlertMessageData({
         message: "Signed Up Successfully!!",
         type: "success",

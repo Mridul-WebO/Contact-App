@@ -6,11 +6,17 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ContactList from "./pages/contactList/ContactList";
 import Authenticate from "./components/Authenticate";
 import ErrorPage from "./pages/errorPage/ErrorPage";
+import { Provider } from "react-redux";
+import store from "./app/store";
 
 const AppRouting = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: (
+      <Provider store={store}>
+        <App />
+      </Provider>
+    ),
     children: [
       {
         element: <Authenticate />,

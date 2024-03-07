@@ -4,11 +4,11 @@ import NavBar from "./components/NavBar";
 import { useState } from "react";
 import SnackBar from "./components/SnackBar";
 import { fetchCurrentUser } from "./storage/Storage";
+import { useSelector } from "react-redux";
 
 function App() {
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(
-    !!sessionStorage.getItem("currentUser")
-  );
+  const isUserLoggedIn = useSelector((state) => state.auth.loggedIn);
+
   const [alertMessageData, setAlertMessageData] = useState({
     message: "",
     type: "",
@@ -22,7 +22,7 @@ function App() {
     <>
       {isUserLoggedIn && (
         <NavBar
-          setIsUserLoggedIn={setIsUserLoggedIn}
+          // setIsUserLoggedIn={setIsUserLoggedIn}
           setAlertMessageData={setAlertMessageData}
           alertMessageData={alertMessageData}
         />
@@ -31,8 +31,8 @@ function App() {
         context={{
           alertMessageData,
           setAlertMessageData,
-          isUserLoggedIn,
-          setIsUserLoggedIn,
+          // isUserLoggedIn,
+          // setIsUserLoggedIn,
           userName,
         }}
       />

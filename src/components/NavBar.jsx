@@ -4,18 +4,18 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-
 import { useNavigate } from "react-router";
-import { removeCurrentUser } from "../storage/Storage";
+import { useDispatch } from "react-redux";
+import { userLoggedOut } from "../features/auth/authSlice";
 
-function NavBar({ setIsUserLoggedIn, setAlertMessageData }) {
+function NavBar({ setAlertMessageData }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   function handleLogOut(event) {
     event.preventDefault();
 
-    removeCurrentUser();
-    setIsUserLoggedIn(false);
+    dispatch(userLoggedOut());
     navigate("/");
 
     setAlertMessageData({

@@ -15,11 +15,14 @@ import { Link } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Alert, InputAdornment } from "@mui/material";
-import { addData, getData, setCurrentUser } from "../../storage/Storage";
+import { addData, getData } from "../../storage/Storage";
 import { useOutletContext } from "react-router-dom";
 import { regex, getUniqueId } from "../../utils/helperFunctions";
+import { userLoggedIn } from "../../features/auth/authSlice";
+import { useDispatch } from "react-redux";
 
 export default function SignUp() {
+  const dispatch = useDispatch();
   const signUpBtnRef = React.useRef(null);
   const navigate = useNavigate();
   const context = useOutletContext();
@@ -33,11 +36,7 @@ export default function SignUp() {
     password: "",
     confirmPassword: "",
   });
-  // const [handleErrors, setHandleErrors] = React.useState({
-  //   email: false,
-  //   password: false,
-  //   confirmPassword: false,
-  // });
+
   const [handleErrors, setHandleErrors] = React.useState({
     email: { show: false, message: "Email is required" },
     password: { show: false, message: "Password is required" },
@@ -501,7 +500,8 @@ export default function SignUp() {
       });
     } else {
       setFlag(false);
-      setCurrentUser(formData);
+      dispatch(userLoggedIn(formData));
+
       addData({
         userId: formData.userId,
         email: formData.email,
@@ -509,7 +509,6 @@ export default function SignUp() {
         contacts: [],
       });
 
-      context.setIsUserLoggedIn(true);
       navigate("/contact-list");
 
       context.setAlertMessageData({
