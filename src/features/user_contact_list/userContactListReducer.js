@@ -52,5 +52,4 @@ const userContactReducer = (state = initialState, action) => {
       return state;
   }
 };
-
 export default userContactReducer;

@@ -5,10 +5,10 @@ import { useState } from "react";
 import SnackBar from "./components/SnackBar";
 // import { fetchCurrentUser } from "./storage/Storage";
 import { useSelector } from "react-redux";
+import { isLoggedinSelector } from "./features/auth/authReducer";
 
 function App() {
-  const isUserLoggedIn = useSelector((state) => state.auth.loggedIn);
-
+  const isUserLoggedIn = useSelector(isLoggedinSelector);
   const [alertMessageData, setAlertMessageData] = useState({
     message: "",
     type: "",
@@ -16,13 +16,10 @@ function App() {
     open: false,
   });
 
-  // const userName = fetchCurrentUser()?.email.split("@")[0];
-
   return (
     <>
       {isUserLoggedIn && (
         <NavBar
-          // setIsUserLoggedIn={setIsUserLoggedIn}
           setAlertMessageData={setAlertMessageData}
           alertMessageData={alertMessageData}
         />
@@ -31,9 +28,6 @@ function App() {
         context={{
           alertMessageData,
           setAlertMessageData,
-          // isUserLoggedIn,
-          // setIsUserLoggedIn,
-          // userName,
         }}
       />
       {alertMessageData.open && (

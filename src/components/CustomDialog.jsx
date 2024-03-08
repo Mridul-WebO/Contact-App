@@ -282,6 +282,11 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
     e.target.value = null;
   };
 
+  const handleRemoveImage = () => {
+    setUserContact({ ...userContact, imageUrl: "" });
+    imageUploadBtnRef.current.value = null;
+  };
+
   return (
     <React.Fragment>
       <Dialog
@@ -306,7 +311,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
             >
               <Avatar
                 style={{ cursor: "pointer" }}
-                sx={{ mx: 25, width: 75, height: 75 }}
+                sx={{ mx: 25, my: 2, width: 75, height: 75 }}
                 alt=" Sharp"
                 src={userContact?.imageUrl}
                 onClick={() => {
@@ -315,6 +320,11 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
               >
                 <CloudUploadIcon />
               </Avatar>
+              {userContact?.imageUrl && (
+                <Button variant="outlined" onClick={handleRemoveImage}>
+                  Remove Image
+                </Button>
+              )}
               <input
                 type="file"
                 accept="image/png, image/gif, image/jpeg"

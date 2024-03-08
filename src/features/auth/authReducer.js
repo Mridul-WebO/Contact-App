@@ -2,7 +2,6 @@ const USER_LOGGED_IN = "USER_LOGGED_IN";
 const USER_LOGGED_OUT = "USER_LOGGED_OUT";
 
 const initialState = {
-  loggedIn: false,
   currentUser: {},
 };
 const authReducer = (state = initialState, action) => {
@@ -11,19 +10,20 @@ const authReducer = (state = initialState, action) => {
       return {
         ...state,
         currentUser: action.payload,
-        loggedIn: true,
       };
 
     case USER_LOGGED_OUT:
       return {
         ...state,
         currentUser: action.payload,
-        loggedIn: false,
       };
 
     default:
       return state;
   }
 };
+
+export const isLoggedinSelector = (state) =>
+  !!Object.keys(state.auth.currentUser);
 
 export default authReducer;

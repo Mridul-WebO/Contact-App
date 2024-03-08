@@ -24,6 +24,7 @@ export default function ContactList() {
   const userId = useSelector((state) => state.auth.currentUser.userId);
   const contactsListData = useSelector((state) => state.contactsList.data);
   const contactList = contactsListData?.filter((contact) => {
+    console.log("hii");
     return parseInt(contact.userId) === parseInt(userId);
   });
   const userName = useSelector((state) => state.auth.currentUser).email.split(
