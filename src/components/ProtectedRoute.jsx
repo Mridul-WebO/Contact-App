@@ -1,10 +1,11 @@
 import { Navigate, Outlet, useOutletContext } from "react-router-dom";
-import { fetchCurrentUser } from "../storage/Storage";
+import { useSelector } from "react-redux";
 
 function ProtectedRoute() {
+  const currentUser = useSelector((state) => state.auth.currentUser);
   const context = useOutletContext();
 
-  if (!fetchCurrentUser()) {
+  if (Object.keys(currentUser).length === 0) {
     return <Navigate to="/" />;
   }
 

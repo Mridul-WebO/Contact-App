@@ -5,6 +5,7 @@ const IMPORT_CONTACTS = "IMPORT_CONTACTS";
 const DELETE_ALL_CONTACTS = "DELETE_ALL_CONTACTS";
 
 export const addContact = (userObj = {}) => {
+  console.log({ userObj });
   return {
     type: ADD_CONTACT,
     payload: userObj,
@@ -32,8 +33,10 @@ export const importContacts = (contacts = []) => {
   };
 };
 
-export const deleteAllContacts = () => {
+export const deleteAllContacts = (userId = null) => {
+  // userId : currentUser userId
   return {
     type: DELETE_ALL_CONTACTS,
+    payload: userId,
   };
 };

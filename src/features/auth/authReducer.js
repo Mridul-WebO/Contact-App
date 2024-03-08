@@ -4,7 +4,6 @@ const USER_LOGGED_OUT = "USER_LOGGED_OUT";
 const initialState = {
   loggedIn: false,
   currentUser: {},
-  error: "",
 };
 const authReducer = (state = initialState, action) => {
   switch (action.type) {

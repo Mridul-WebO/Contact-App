@@ -17,6 +17,9 @@ import {
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { regex, getUniqueId } from "../utils/helperFunctions";
 
+// redux
+import { useSelector } from "react-redux";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -37,17 +40,17 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
     }
   });
 
+  const userId = useSelector((state) => state.auth.currentUser.userId);
   const [userContact, setUserContact] = React.useState(
     (data.userId !== "" && data) || {
-      userId: getUniqueId(),
+      _id: getUniqueId(),
+      userId: userId,
       name: "",
       email: "",
       phoneNumber: "",
       imageUrl: "",
     }
   );
-
-  console.log({ userContact });
 
   const [onChangeValidation, setOnChangeValidation] = React.useState(false);
 
@@ -246,7 +249,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
           ...handleErrors,
           phoneNumber: {
             show: true,
-            message: "",
+            message: "Please enter a valid 10 digit phone number",
           },
         });
       } else {

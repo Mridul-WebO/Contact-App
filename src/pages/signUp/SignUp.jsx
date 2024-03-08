@@ -9,7 +9,6 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -17,6 +16,8 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Alert, InputAdornment } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
 import { regex, getUniqueId } from "../../utils/helperFunctions";
+
+// redux
 import { userLoggedIn } from "../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "./../../features/user/userSlice";

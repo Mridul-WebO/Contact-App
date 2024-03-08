@@ -11,7 +11,7 @@ export const regex = {
   phoneNumber: /^\d{10}$/,
 };
 
-export const importContacts = (file, callBackFunc) => {
+export const handleContactsImport = (file, callBackFunc) => {
   Papa.parse(file, {
     header: true,
     error: (err) => console.log(err),
@@ -19,7 +19,7 @@ export const importContacts = (file, callBackFunc) => {
   });
 };
 
-export const exportContacts = (data, fileName) => {
+export const handleContactsExport = (data, fileName) => {
   const exportType = exportFromJSON.types.csv;
   exportFromJSON({ data, fileName, exportType });
   return true;

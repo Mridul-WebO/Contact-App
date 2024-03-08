@@ -5,7 +5,7 @@ const IMPORT_CONTACTS = "IMPORT_CONTACTS";
 const DELETE_ALL_CONTACTS = "DELETE_ALL_CONTACTS";
 
 const initialState = {
-  contactList: [],
+  data: [],
 };
 
 const userContactReducer = (state = initialState, action) => {
@@ -14,41 +14,38 @@ const userContactReducer = (state = initialState, action) => {
       // payload: obj
       return {
         ...state,
-        contactList: [action.payload, ...state.contactList],
+        data: [action.payload, ...state.data],
       };
 
     case UPDATE_CONTACT:
-      const updatedContacts = state.contactList;
-      const { userId } = action.payload;
-      const { contacts } = state.contactList.find(
-        (user) => user.userId === userId
+      const contactIndex = state.data.findIndex(
+        (contact) => contact._id === action.payload._id
       );
-      const rowIndex = contacts.findIndex(
-        (contact) => contact.userId === action.payload.userId
-      );
-      contacts.splice(rowIndex, 1, action.payload);
+      state.data.splice(contactIndex, 1, action.payload);
 
       return {
         ...state,
-        contactList: updatedContacts,
       };
 
     case DELETE_CONTACT:
       return {
         ...state,
+        data: state.data.filter((contact) => contact._id !== action.payload),
       };
 
     case IMPORT_CONTACTS:
       // payload : array of obj
       return {
-        ...state,
-        contactList: [...action.payload, ...state.contactList],
+        data: [...action.payload, ...state.data],
       };
 
     case DELETE_ALL_CONTACTS:
+      const updatedData = state.data.filter((contact) => {
+        return contact.userId !== action.payload;
+      });
       return {
         ...state,
-        contactList: [],
+        data: [...updatedData],
       };
 
     default:

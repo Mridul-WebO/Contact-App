@@ -12,7 +12,10 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useOutletContext } from "react-router-dom";
-import { deleteContact } from "../storage/Storage";
+
+// redux
+import { useDispatch, useSelector } from "react-redux";
+import { deleteContact } from "../features/user_contact_list/userContactListSlice";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -34,13 +37,16 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function BasicTable({
-  rows,
-  setRows,
-  setCurrentRow,
-  setOpen,
-  contacts,
-}) {
+export default function BasicTable({ setOpen, setCurrentRow }) {
+  const dispatch = useDispatch();
+  const userId = useSelector((state) => state.auth.currentUser.userId);
+
+  const contactsListData = useSelector((state) => state.contactsList.data);
+
+  const contactList = contactsListData?.filter((contact) => {
+    return contact.userId === userId;
+  });
+
   const context = useOutletContext();
 
   const handleEditRow = (row) => {
@@ -49,11 +55,7 @@ export default function BasicTable({
   };
 
   const handleDeleteRow = (userId) => {
-    const updatedContacts = contacts.filter(
-      (contact) => parseInt(contact.userId) !== parseInt(userId)
-    );
-    setRows(updatedContacts);
-    deleteContact(updatedContacts);
+    dispatch(deleteContact(userId));
 
     context.setAlertMessageData({
       message: "Contact deleted successfully!",
@@ -77,8 +79,8 @@ export default function BasicTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <StyledTableRow key={parseInt(row.userId)}>
+          {contactList?.map((row) => (
+            <StyledTableRow key={parseInt(row._id)}>
               <StyledTableCell component="th" scope="row">
                 <Avatar
                   style={{ cursor: "pointer" }}
@@ -88,7 +90,7 @@ export default function BasicTable({
                   {!row.imageURL && row.email?.slice(0, 1).toUpperCase()}
                 </Avatar>
               </StyledTableCell>
-              <StyledTableCell align="center">{row.userId}</StyledTableCell>
+              <StyledTableCell align="center">{row._id}</StyledTableCell>
               <StyledTableCell align="center">{row.name}</StyledTableCell>
               <StyledTableCell align="center">{row.email}</StyledTableCell>
               <StyledTableCell align="center">
@@ -106,7 +108,7 @@ export default function BasicTable({
                 <Tooltip title="Delete">
                   <DeleteIcon
                     style={{ cursor: "pointer" }}
-                    onClick={() => handleDeleteRow(row.userId)}
+                    onClick={() => handleDeleteRow(row._id)}
                   />
                 </Tooltip>
               </StyledTableCell>

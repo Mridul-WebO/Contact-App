@@ -27,7 +27,7 @@ export default function SignIn() {
   const navigate = useNavigate();
 
   const registeredUsersData = useSelector(
-    (state) => state.registeredUsers?.userData
+    (state) => state.registeredUsers.data
   );
 
   const [alertMessage, setAlertMessage] = React.useState({
@@ -186,11 +186,12 @@ export default function SignIn() {
         open: true,
       });
     } else {
+      dispatch(userLoggedIn(user));
+
       setOnChangeValidation(false);
 
-      dispatch(userLoggedIn(formData));
-
       navigate("/contact-list");
+
       context.setAlertMessageData({
         message: "Signed Up Successfully!!",
         type: "success",
