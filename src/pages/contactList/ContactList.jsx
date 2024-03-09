@@ -8,7 +8,7 @@ import {
   handleContactsImport,
 } from "../../utils/helperFunctions";
 import CustomDialog from "../../components/CustomDialog";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 
 // redux
 import { useDispatch } from "react-redux";
@@ -23,10 +23,14 @@ export default function ContactList() {
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.auth.currentUser.userId);
   const contactsListData = useSelector((state) => state.contactsList.data);
-  const contactList = contactsListData?.filter((contact) => {
-    console.log("hii");
-    return parseInt(contact.userId) === parseInt(userId);
-  });
+
+  const contactList = React.useMemo(() => {
+    return contactsListData?.filter((contact) => {
+      console.log("hii");
+      return parseInt(contact.userId) === parseInt(userId);
+    });
+  }, [contactsListData, userId])
+
   const userName = useSelector((state) => state.auth.currentUser).email.split(
     "@"
   )[0];

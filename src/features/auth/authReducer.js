@@ -24,6 +24,6 @@ const authReducer = (state = initialState, action) => {
 };
 
 export const isLoggedinSelector = (state) =>
-  !!Object.keys(state.auth.currentUser);
+  Object.keys(state.auth.currentUser).length !== 0;
 
 export default authReducer;

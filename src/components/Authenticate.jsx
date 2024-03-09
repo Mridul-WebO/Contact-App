@@ -4,6 +4,7 @@ import { isLoggedinSelector } from "../features/auth/authReducer";
 
 function Authenticate() {
   const currentUser = useSelector(isLoggedinSelector);
+  // const currentUser = useSelector((state) => state.auth.currentUser);
   const context = useOutletContext();
 
   if (currentUser) {
