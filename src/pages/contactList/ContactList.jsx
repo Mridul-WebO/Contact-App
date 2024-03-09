@@ -1,23 +1,24 @@
-import * as React from "react";
-import BasicTable from "../../components/BasicTable";
-import { Button, Container, Fab, Typography } from "@mui/material";
-import { useOutletContext } from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
-import {
-  handleContactsExport,
-  handleContactsImport,
-} from "../../utils/helperFunctions";
-import CustomDialog from "../../components/CustomDialog";
-import { shallowEqual, useSelector } from "react-redux";
+/* eslint-disable quotes */
+import * as React from 'react';
 
-// redux
-import { useDispatch } from "react-redux";
+import AddIcon from '@mui/icons-material/Add';
+import { Button, Container, Fab, Typography } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux';
+import { useOutletContext } from 'react-router-dom';
+
+import BasicTable from '../../components/BasicTable';
+import AlertDialog from '../../components/ConfirmAlert';
+import CustomDialog from '../../components/CustomDialog';
 import {
   addContact,
   deleteAllContacts,
   updateContact,
   importContacts,
-} from "../../features/user_contact_list/userContactListSlice";
+} from '../../features/user_contact_list/userContactListSlice';
+import {
+  handleContactsExport,
+  handleContactsImport,
+} from '../../utils/helperFunctions';
 
 export default function ContactList() {
   const dispatch = useDispatch();
@@ -26,13 +27,12 @@ export default function ContactList() {
 
   const contactList = React.useMemo(() => {
     return contactsListData?.filter((contact) => {
-      console.log("hii");
       return parseInt(contact.userId) === parseInt(userId);
     });
-  }, [contactsListData, userId])
+  }, [contactsListData, userId]);
 
   const userName = useSelector((state) => state.auth.currentUser).email.split(
-    "@"
+    '@'
   )[0];
 
   const importRef = React.useRef(null);
@@ -40,15 +40,16 @@ export default function ContactList() {
 
   const [currentRow, setCurrentRow] = React.useState({});
   const [open, setOpen] = React.useState(false);
+  const [openAlertBox, setOpenAlertBox] = React.useState(false);
 
   React.useEffect(() => {
     if (!open) {
       setCurrentRow({
-        userId: "",
-        name: "",
-        email: "",
-        phoneNumber: "",
-        imageUrl: "",
+        userId: '',
+        name: '',
+        email: '',
+        phoneNumber: '',
+        imageUrl: '',
       });
     }
   }, [open]);
@@ -68,9 +69,9 @@ export default function ContactList() {
 
     context.setAlertMessageData({
       message: !contactExits
-        ? "Contact added successfully!"
-        : "Contact updated successfully!",
-      type: "success",
+        ? 'Contact added successfully!'
+        : 'Contact updated successfully!',
+      type: 'success',
       hideDuration: 2000,
       open: true,
     });
@@ -81,14 +82,7 @@ export default function ContactList() {
   };
 
   const handleDeleteAllContacts = () => {
-    dispatch(deleteAllContacts(userId));
-
-    context.setAlertMessageData({
-      message: "Contacts deleted successfully!",
-      type: "success",
-      hideDuration: 2000,
-      open: true,
-    });
+    setOpenAlertBox(true);
   };
 
   const handleImportContacts = (event) => {
@@ -103,8 +97,8 @@ export default function ContactList() {
         });
         if (!newContacts[0]?.userId && newContacts?.length !== 0) {
           context.setAlertMessageData({
-            message: "Error importing data. Please try again later.",
-            type: "error",
+            message: 'Error importing data. Please try again later.',
+            type: 'error',
             hideDuration: 2000,
             open: true,
           });
@@ -119,22 +113,22 @@ export default function ContactList() {
             dispatch(importContacts(importedContacts));
 
             context.setAlertMessageData({
-              message: "Contacts imported successfully!",
-              type: "success",
+              message: 'Contacts imported successfully!',
+              type: 'success',
               hideDuration: 2000,
               open: true,
             });
           } else if (newContacts.length === 0) {
             context.setAlertMessageData({
-              message: "Duplicate contacts Merged successfully",
-              type: "success",
+              message: 'Duplicate contacts Merged successfully',
+              type: 'success',
               hideDuration: 2000,
               open: true,
             });
           } else {
             context.setAlertMessageData({
-              message: "Error importing data. Please try again later.",
-              type: "error",
+              message: 'Error importing data. Please try again later.',
+              type: 'error',
               hideDuration: 2000,
               open: true,
             });
@@ -143,7 +137,7 @@ export default function ContactList() {
       } else {
         context.setAlertMessageData({
           message: "Couldn't import data. Please try again later.",
-          type: "error",
+          type: 'error',
           hideDuration: 2000,
           open: true,
         });
@@ -156,19 +150,19 @@ export default function ContactList() {
   };
 
   const handleExportContacts = () => {
-    const fileName = "Contact-List";
+    const fileName = 'Contact-List';
     const res = handleContactsExport(contactList, fileName);
     if (res) {
       context.setAlertMessageData({
-        message: "Contacts exported successfully!!",
-        type: "success",
+        message: 'Contacts exported successfully!!',
+        type: 'success',
         hideDuration: 1500,
         open: true,
       });
     } else {
       context.setAlertMessageData({
         message: "Couldn't export contacts. Pleas try again later.",
-        type: "error",
+        type: 'error',
         hideDuration: 1500,
         open: true,
       });
@@ -182,7 +176,7 @@ export default function ContactList() {
           Welcome!! {userName}
         </Typography>
       </Container>
-      <Container sx={{ textAlign: "end" }}>
+      <Container sx={{ textAlign: 'end' }}>
         {contactList.length !== 0 && (
           <>
             <Button
@@ -212,7 +206,7 @@ export default function ContactList() {
           <input
             type="file"
             accept=".csv"
-            style={{ display: "none" }}
+            style={{ display: 'none' }}
             ref={importRef}
             onChange={handleImportContacts}
           />
@@ -234,6 +228,28 @@ export default function ContactList() {
           data={currentRow}
           onSubmit={onSubmit}
           onClose={onClose}
+        />
+      )}
+
+      {openAlertBox && (
+        <AlertDialog
+          open={openAlertBox}
+          message={'Are you sure?'}
+          handleCancel={() => {
+            setOpenAlertBox(false);
+          }}
+          handleConfirm={() => {
+            dispatch(deleteAllContacts(userId));
+
+            context.setAlertMessageData({
+              message: 'Contacts deleted successfully!',
+              type: 'success',
+              hideDuration: 2000,
+              open: true,
+            });
+            setOpenAlertBox(false);
+          }}
+          confirmBtnText={'Delete All'}
         />
       )}
     </>

@@ -1,26 +1,28 @@
-import "./SignUp.css";
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { useNavigate } from "react-router";
-import { Link } from "react-router-dom";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { Alert, InputAdornment } from "@mui/material";
-import { useOutletContext } from "react-router-dom";
-import { regex, getUniqueId } from "../../utils/helperFunctions";
+/* eslint-disable quotes */
+import './SignUp.css';
+import * as React from 'react';
+
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { Alert, InputAdornment } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { Link, useOutletContext } from 'react-router-dom';
+
+import { addUser } from './../../features/user/userSlice';
+import { userLoggedIn } from '../../features/auth/authSlice';
+import { regex, getUniqueId } from '../../utils/helperFunctions';
 
 // redux
-import { userLoggedIn } from "../../features/auth/authSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { addUser } from "./../../features/user/userSlice";
 
 export default function SignUp() {
   const dispatch = useDispatch();
@@ -38,20 +40,20 @@ export default function SignUp() {
 
   const [formData, setFormData] = React.useState({
     userId: getUniqueId(),
-    email: "",
-    password: "",
-    confirmPassword: "",
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
 
   const [handleErrors, setHandleErrors] = React.useState({
-    email: { show: false, message: "Email is required" },
-    password: { show: false, message: "Password is required" },
-    confirmPassword: { show: false, message: "Confirm password is required" },
+    email: { show: false, message: 'Email is required' },
+    password: { show: false, message: 'Password is required' },
+    confirmPassword: { show: false, message: 'Confirm password is required' },
   });
 
   const [alertMessage, setAlertMessage] = React.useState({
-    message: "",
-    type: "",
+    message: '',
+    type: '',
     open: false,
   });
 
@@ -60,30 +62,30 @@ export default function SignUp() {
 
     if (flag) {
       switch (e.target.name) {
-        case "email":
-          if (e.target.value === "") {
+        case 'email':
+          if (e.target.value === '') {
             setHandleErrors({
               ...handleErrors,
-              email: { show: true, message: "Email is required" },
+              email: { show: true, message: 'Email is required' },
             });
           } else if (!e.target.value.match(regex.email)) {
             setHandleErrors({
               ...handleErrors,
-              email: { show: true, message: "Invalid email" },
+              email: { show: true, message: 'Invalid email' },
             });
           } else {
             setHandleErrors({
               ...handleErrors,
-              email: { show: false, message: "" },
+              email: { show: false, message: '' },
             });
           }
 
           break;
-        case "password":
-          if (e.target.value === "") {
+        case 'password':
+          if (e.target.value === '') {
             setHandleErrors({
               ...handleErrors,
-              password: { show: true, message: " Password is required" },
+              password: { show: true, message: ' Password is required' },
             });
           } else if (!e.target.value.match(regex.password)) {
             setHandleErrors({
@@ -97,18 +99,18 @@ export default function SignUp() {
           } else if (e.target.value.match(regex.password)) {
             setHandleErrors({
               ...handleErrors,
-              password: { show: false, message: "" },
+              password: { show: false, message: '' },
             });
           }
           break;
 
-        case "confirmPassword":
-          if (e.target.value === "") {
+        case 'confirmPassword':
+          if (e.target.value === '') {
             setHandleErrors({
               ...handleErrors,
               confirmPassword: {
                 show: true,
-                message: "Confirm password is required",
+                message: 'Confirm password is required',
               },
             });
           } else if (e.target.value !== formData.password) {
@@ -122,7 +124,7 @@ export default function SignUp() {
           } else if (e.target.value === formData.password) {
             setHandleErrors({
               ...handleErrors,
-              confirmPassword: { show: false, message: "" },
+              confirmPassword: { show: false, message: '' },
             });
           }
           break;
@@ -137,8 +139,8 @@ export default function SignUp() {
     }
   }
 
-  document.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
+  document.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
       signUpBtnRef.current?.click();
     }
   });
@@ -186,7 +188,7 @@ export default function SignUp() {
         setHandleErrors({
           ...handleErrors,
           email: { ...handleErrors.email, show: true },
-          password: { show: false, message: "" },
+          password: { show: false, message: '' },
           confirmPassword: { ...handleErrors.confirmPassword, show: true },
         });
       }
@@ -194,15 +196,15 @@ export default function SignUp() {
       if (!email.match(regex.email)) {
         setHandleErrors({
           ...handleErrors,
-          email: { show: true, message: "Invalid email" },
-          password: { show: true, message: "" },
+          email: { show: true, message: 'Invalid email' },
+          password: { show: true, message: '' },
           confirmPassword: { ...handleErrors.confirmPassword, show: true },
         });
       } else {
         setHandleErrors({
           ...handleErrors,
-          email: { show: false, message: "" },
-          password: { show: true, message: "" },
+          email: { show: false, message: '' },
+          password: { show: true, message: '' },
           confirmPassword: { ...handleErrors.confirmPassword, show: true },
         });
       }
@@ -237,7 +239,7 @@ export default function SignUp() {
             confirmPassword: {
               ...handleErrors.confirmPassword,
               show: false,
-              message: "",
+              message: '',
             },
           });
         }
@@ -261,7 +263,7 @@ export default function SignUp() {
             confirmPassword: {
               ...handleErrors.confirmPassword,
               show: false,
-              message: "",
+              message: '',
             },
           });
         }
@@ -273,7 +275,7 @@ export default function SignUp() {
           email: {
             ...handleErrors.email,
             show: true,
-            message: "Invalid email",
+            message: 'Invalid email',
           },
           password: { ...handleErrors.password, show: true },
           confirmPassword: {
@@ -285,7 +287,7 @@ export default function SignUp() {
       } else {
         setHandleErrors({
           ...handleErrors,
-          email: { ...handleErrors.email, show: false, message: " " },
+          email: { ...handleErrors.email, show: false, message: ' ' },
           password: { ...handleErrors.password, show: true },
           confirmPassword: {
             ...handleErrors.confirmPassword,
@@ -302,7 +304,7 @@ export default function SignUp() {
             email: {
               ...handleErrors.email,
               show: true,
-              message: "Invalid email ",
+              message: 'Invalid email ',
             },
             password: {
               ...handleErrors.password,
@@ -321,9 +323,9 @@ export default function SignUp() {
             email: {
               ...handleErrors.email,
               show: true,
-              message: "Invalid email ",
+              message: 'Invalid email ',
             },
-            password: { ...handleErrors.password, show: false, message: "" },
+            password: { ...handleErrors.password, show: false, message: '' },
             confirmPassword: {
               ...handleErrors.confirmPassword,
               show: true,
@@ -334,7 +336,7 @@ export default function SignUp() {
         if (!password.match(regex.password)) {
           setHandleErrors({
             ...handleErrors,
-            email: { ...handleErrors.email, show: false, message: " " },
+            email: { ...handleErrors.email, show: false, message: ' ' },
             password: {
               ...handleErrors.password,
               show: true,
@@ -352,9 +354,9 @@ export default function SignUp() {
             email: {
               ...handleErrors.email,
               show: false,
-              message: "Invalid email ",
+              message: 'Invalid email ',
             },
-            password: { ...handleErrors.password, show: false, message: "" },
+            password: { ...handleErrors.password, show: false, message: '' },
             confirmPassword: {
               ...handleErrors.confirmPassword,
               show: true,
@@ -369,7 +371,7 @@ export default function SignUp() {
           email: {
             ...handleErrors.email,
             show: true,
-            message: "Invalid email",
+            message: 'Invalid email',
           },
           password: {
             ...handleErrors.password,
@@ -389,7 +391,7 @@ export default function SignUp() {
           email: {
             ...handleErrors.email,
             show: true,
-            message: "Invalid email",
+            message: 'Invalid email',
           },
           password: {
             ...handleErrors.password,
@@ -400,7 +402,7 @@ export default function SignUp() {
           confirmPassword: {
             ...handleErrors.confirmPassword,
             show: false,
-            message: "",
+            message: '',
           },
         });
       }
@@ -411,7 +413,7 @@ export default function SignUp() {
           email: {
             ...handleErrors.email,
             show: false,
-            message: "",
+            message: '',
           },
           password: {
             ...handleErrors.password,
@@ -431,7 +433,7 @@ export default function SignUp() {
           email: {
             ...handleErrors.email,
             show: false,
-            message: "",
+            message: '',
           },
           password: {
             ...handleErrors.password,
@@ -442,7 +444,7 @@ export default function SignUp() {
           confirmPassword: {
             ...handleErrors.confirmPassword,
             show: false,
-            message: "",
+            message: '',
           },
         });
       }
@@ -453,9 +455,9 @@ export default function SignUp() {
           email: {
             ...handleErrors.email,
             show: true,
-            message: "Invalid email",
+            message: 'Invalid email',
           },
-          password: { ...handleErrors.password, show: false, message: "" },
+          password: { ...handleErrors.password, show: false, message: '' },
           confirmPassword: {
             ...handleErrors.confirmPassword,
             show: true,
@@ -468,17 +470,17 @@ export default function SignUp() {
           email: {
             ...handleErrors.email,
             show: true,
-            message: "Invalid email",
+            message: 'Invalid email',
           },
           password: {
             ...handleErrors.password,
             show: false,
-            message: "",
+            message: '',
           },
           confirmPassword: {
             ...handleErrors.confirmPassword,
             show: false,
-            message: "",
+            message: '',
           },
         });
       }
@@ -503,7 +505,7 @@ export default function SignUp() {
             User already exists. Please <Link to="/">Sign In</Link>
           </span>
         ),
-        type: "error",
+        type: 'error',
         open: true,
       });
     } else {
@@ -512,11 +514,11 @@ export default function SignUp() {
       dispatch(addUser(formData));
       dispatch(userLoggedIn(formData));
 
-      navigate("/contact-list");
+      navigate('/contact-list');
 
       context.setAlertMessageData({
-        message: "Signed Up Successfully!!",
-        type: "success",
+        message: 'Signed Up Successfully!!',
+        type: 'success',
         open: true,
       });
     }
@@ -528,20 +530,20 @@ export default function SignUp() {
       <Box
         sx={{
           marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}
         className="signUpContainer"
       >
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign Up
         </Typography>
         {alertMessage.open && (
-          <Alert sx={{ width: "100%" }} severity={alertMessage.type}>
+          <Alert sx={{ width: '100%' }} severity={alertMessage.type}>
             {alertMessage.message}
           </Alert>
         )}
@@ -566,7 +568,7 @@ export default function SignUp() {
             fullWidth
             name="password"
             label="Password"
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             id="password"
             autoComplete="current-password"
             value={formData.password}
@@ -580,12 +582,12 @@ export default function SignUp() {
                 <InputAdornment position="start">
                   {showPassword ? (
                     <VisibilityIcon
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: 'pointer' }}
                       onClick={() => setShowPassword(false)}
                     />
                   ) : (
                     <VisibilityOffIcon
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: 'pointer' }}
                       onClick={() => setShowPassword(true)}
                     />
                   )}
@@ -599,7 +601,7 @@ export default function SignUp() {
             fullWidth
             name="confirmPassword"
             label="Confirm Password"
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             id="confirmPassword"
             autoComplete="current-password"
             value={formData.confirmPassword}
@@ -624,7 +626,7 @@ export default function SignUp() {
             <Grid item xs></Grid>
             <Grid item>
               <Link to="/" variant="body2">
-                {"Already a user? Sign In"}
+                {'Already a user? Sign In'}
               </Link>
             </Grid>
           </Grid>

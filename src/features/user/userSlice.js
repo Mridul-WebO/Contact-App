@@ -1,4 +1,4 @@
-const ADD_USER = "ADD_USER";
+const ADD_USER = 'ADD_USER';
 
 export const addUser = (userObj = {}) => {
   return {

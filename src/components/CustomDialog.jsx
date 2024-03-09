@@ -1,10 +1,6 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Slide from "@mui/material/Slide";
+import * as React from 'react';
+
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
   Alert,
   Avatar,
@@ -12,13 +8,18 @@ import {
   Container,
   CssBaseline,
   TextField,
-} from "@mui/material";
+} from '@mui/material';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import { useSelector } from 'react-redux';
 
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { regex, getUniqueId } from "../utils/helperFunctions";
+import { regex, getUniqueId } from '../utils/helperFunctions';
 
 // redux
-import { useSelector } from "react-redux";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -29,35 +30,35 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
   const handleNewContactBtnRef = React.useRef(null);
 
   const [alertMessage, setAlertMessage] = React.useState({
-    message: "",
-    type: "",
+    message: '',
+    type: '',
     open: false,
   });
 
-  document.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
+  document.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
       handleNewContactBtnRef.current?.click();
     }
   });
 
   const userId = useSelector((state) => state.auth.currentUser.userId);
   const [userContact, setUserContact] = React.useState(
-    (data.userId !== "" && data) || {
+    (data.userId !== '' && data) || {
       _id: getUniqueId(),
       userId: userId,
-      name: "",
-      email: "",
-      phoneNumber: "",
-      imageUrl: "",
+      name: '',
+      email: '',
+      phoneNumber: '',
+      imageUrl: '',
     }
   );
 
   const [onChangeValidation, setOnChangeValidation] = React.useState(false);
 
   const [handleErrors, setHandleErrors] = React.useState({
-    name: { show: false, message: "Name is required" },
-    email: { show: false, message: "Email is required" },
-    phoneNumber: { show: false, message: "Phone number is required" },
+    name: { show: false, message: 'Name is required' },
+    email: { show: false, message: 'Email is required' },
+    phoneNumber: { show: false, message: 'Phone number is required' },
   });
 
   function handleContactData(e) {
@@ -65,56 +66,56 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
 
     if (onChangeValidation) {
       switch (e.target.name) {
-        case "name":
-          if (e.target.value === "") {
+        case 'name':
+          if (e.target.value === '') {
             setHandleErrors({
               ...handleErrors,
               name: { ...handleErrors, show: true },
             });
-          } else if (e.target.value !== "") {
+          } else if (e.target.value !== '') {
             setHandleErrors({
               ...handleErrors,
               name: { ...handleErrors, show: false },
             });
           }
           break;
-        case "email":
-          if (e.target.value === "") {
+        case 'email':
+          if (e.target.value === '') {
             setHandleErrors({
               ...handleErrors,
-              email: { show: true, message: "Email is required" },
+              email: { show: true, message: 'Email is required' },
             });
           } else if (!e.target.value.match(regex.email)) {
             setHandleErrors({
               ...handleErrors,
-              email: { show: true, message: "Invalid Email" },
+              email: { show: true, message: 'Invalid Email' },
             });
           } else if (e.target.value.match(regex.email)) {
             setHandleErrors({
               ...handleErrors,
-              email: { show: false, message: "" },
+              email: { show: false, message: '' },
             });
           }
 
           break;
-        case "phoneNumber":
-          if (e.target.value === "") {
+        case 'phoneNumber':
+          if (e.target.value === '') {
             setHandleErrors({
               ...handleErrors,
-              phoneNumber: { show: true, message: "Phone number is required" },
+              phoneNumber: { show: true, message: 'Phone number is required' },
             });
           } else if (!e.target.value.match(regex.phoneNumber)) {
             setHandleErrors({
               ...handleErrors,
               phoneNumber: {
                 show: true,
-                message: "Please enter a valid 10 digit phone number",
+                message: 'Please enter a valid 10 digit phone number',
               },
             });
           } else if (e.target.value.match(regex.phoneNumber)) {
             setHandleErrors({
               ...handleErrors,
-              phoneNumber: { show: false, message: "" },
+              phoneNumber: { show: false, message: '' },
             });
           }
           break;
@@ -145,7 +146,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
         setHandleErrors({
           phoneNumber: {
             show: true,
-            message: "Please enter a valid 10 digit phone number",
+            message: 'Please enter a valid 10 digit phone number',
           },
           email: { ...handleErrors.email, show: true },
           name: { ...handleErrors.name, show: true },
@@ -164,7 +165,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
           email: {
             ...handleErrors.email,
             show: true,
-            message: "Invalid email",
+            message: 'Invalid email',
           },
           phoneNumber: { ...handleErrors.phoneNumber, show: true },
         });
@@ -191,12 +192,12 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
           email: {
             ...handleErrors.email,
             show: true,
-            message: "Invalid email",
+            message: 'Invalid email',
           },
           phoneNumber: {
             ...handleErrors.phoneNumber,
             show: true,
-            message: "Phone number is required",
+            message: 'Phone number is required',
           },
         });
       } else {
@@ -205,12 +206,12 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
           email: {
             ...handleErrors.email,
             show: true,
-            message: "Invalid email",
+            message: 'Invalid email',
           },
           phoneNumber: {
             ...handleErrors.phoneNumber,
             show: true,
-            message: "Please enter a valid 10 digit phone number",
+            message: 'Please enter a valid 10 digit phone number',
           },
         });
       }
@@ -223,11 +224,11 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
           ...handleErrors,
           email: {
             show: true,
-            message: "Email is required",
+            message: 'Email is required',
           },
           phoneNumber: {
             show: false,
-            message: "",
+            message: '',
           },
         });
       } else {
@@ -235,11 +236,11 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
           ...handleErrors,
           email: {
             show: true,
-            message: "Invalid email",
+            message: 'Invalid email',
           },
           phoneNumber: {
             show: false,
-            message: "",
+            message: '',
           },
         });
       }
@@ -249,7 +250,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
           ...handleErrors,
           phoneNumber: {
             show: true,
-            message: "Please enter a valid 10 digit phone number",
+            message: 'Please enter a valid 10 digit phone number',
           },
         });
       } else {
@@ -257,7 +258,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
           ...handleErrors,
           phoneNumber: {
             show: true,
-            message: "Please enter a valid 10 digit phone number",
+            message: 'Please enter a valid 10 digit phone number',
           },
         });
       }
@@ -276,14 +277,14 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
     const reader = new FileReader();
     reader.readAsDataURL(e.target.files[0]);
 
-    reader.addEventListener("load", () => {
+    reader.addEventListener('load', () => {
       setUserContact({ ...userContact, imageUrl: reader.result });
     });
     e.target.value = null;
   };
 
   const handleRemoveImage = () => {
-    setUserContact({ ...userContact, imageUrl: "" });
+    setUserContact({ ...userContact, imageUrl: '' });
     imageUploadBtnRef.current.value = null;
   };
 
@@ -297,20 +298,20 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>
-          {data.userId === "" ? "Add new contact" : "Update contact"}
+          {data.userId === '' ? 'Add new contact' : 'Update contact'}
         </DialogTitle>
         <DialogContent>
           <Container component="main" maxWidth="xs">
             <CssBaseline />
             <Box
               sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
               }}
             >
               <Avatar
-                style={{ cursor: "pointer" }}
+                style={{ cursor: 'pointer' }}
                 sx={{ mx: 25, my: 2, width: 75, height: 75 }}
                 alt=" Sharp"
                 src={userContact?.imageUrl}
@@ -330,11 +331,11 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                 accept="image/png, image/gif, image/jpeg"
                 ref={imageUploadBtnRef}
                 onChange={handlePhotoUpload}
-                style={{ display: "none" }}
+                style={{ display: 'none' }}
               />
               {alertMessage.open && (
                 <Alert
-                  sx={{ width: "100%", my: 3 }}
+                  sx={{ width: '100%', my: 3 }}
                   severity={alertMessage.type}
                 >
                   {alertMessage.message}
@@ -398,7 +399,7 @@ export default function CustomDialog({ open, data, onSubmit, onClose }) {
                   sx={{ mt: 3, mb: 2 }}
                   ref={handleNewContactBtnRef}
                 >
-                  {data.userId === "" ? "Add" : "Update"}
+                  {data.userId === '' ? 'Add' : 'Update'}
                 </Button>
               </Box>
             </Box>

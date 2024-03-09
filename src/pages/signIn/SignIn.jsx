@@ -1,24 +1,27 @@
-import "./SignIn.css";
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { useNavigate } from "react-router";
-import { Link } from "react-router-dom";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { Alert, InputAdornment } from "@mui/material";
-import { useOutletContext } from "react-router-dom";
-import { regex } from "../../utils/helperFunctions";
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable quotes */
+import './SignIn.css';
+import * as React from 'react';
+
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { Alert, InputAdornment } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { Link, useOutletContext } from 'react-router-dom';
+
+import { userLoggedIn } from '../../features/auth/authSlice';
+import { regex } from '../../utils/helperFunctions';
 
 // redux
-import { useDispatch, useSelector } from "react-redux";
-import { userLoggedIn } from "../../features/auth/authSlice";
 
 export default function SignIn() {
   const dispatch = useDispatch();
@@ -31,8 +34,8 @@ export default function SignIn() {
   );
 
   const [alertMessage, setAlertMessage] = React.useState({
-    message: "",
-    type: "",
+    message: '',
+    type: '',
     open: false,
   });
 
@@ -40,13 +43,13 @@ export default function SignIn() {
   const [onChangeValidation, setOnChangeValidation] = React.useState(false);
 
   const [formData, setFormData] = React.useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   const [handleErrors, setHandleErrors] = React.useState({
-    email: { show: false, message: "Email is required" },
-    password: { show: false, message: "Password is required" },
+    email: { show: false, message: 'Email is required' },
+    password: { show: false, message: 'Password is required' },
   });
 
   function handleData(e) {
@@ -54,37 +57,37 @@ export default function SignIn() {
 
     if (onChangeValidation) {
       switch (e.target.name) {
-        case "email":
+        case 'email':
           if (!e.target.value) {
             setHandleErrors({
               ...handleErrors,
               email: {
                 show: true,
-                message: "Email is required",
+                message: 'Email is required',
               },
             });
           } else if (!e.target.value.match(regex.email)) {
             setHandleErrors({
               ...handleErrors,
-              email: { show: true, message: "Invalid email" },
+              email: { show: true, message: 'Invalid email' },
             });
           } else {
             setHandleErrors({
               ...handleErrors,
-              email: { show: false, message: "" },
+              email: { show: false, message: '' },
             });
           }
           break;
-        case "password":
+        case 'password':
           if (!e.target.value) {
             setHandleErrors({
               ...handleErrors,
-              password: { show: true, message: "Password is required" },
+              password: { show: true, message: 'Password is required' },
             });
           } else {
             setHandleErrors({
               ...handleErrors,
-              password: { show: false, message: "" },
+              password: { show: false, message: '' },
             });
           }
           break;
@@ -100,15 +103,15 @@ export default function SignIn() {
 
   React.useEffect(() => {
     const signInBtn = signInBtnRef.current;
-    document.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
         signInBtn?.click();
       }
     });
 
     return () => {
-      document.removeEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
+      document.removeEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
           signInBtn?.click();
         }
       });
@@ -155,19 +158,19 @@ export default function SignIn() {
       if (!email.match(regex.email)) {
         setHandleErrors({
           ...handleErrors,
-          email: { show: true, message: "Invalid email" },
+          email: { show: true, message: 'Invalid email' },
           password: { ...handleErrors.password, show: true },
         });
       } else {
         setHandleErrors({
           ...handleErrors,
-          email: { show: false, message: "" },
+          email: { show: false, message: '' },
         });
       }
     } else if (!email.match(regex.email)) {
       setHandleErrors({
         ...handleErrors,
-        email: { show: true, message: "Invalid email" },
+        email: { show: true, message: 'Invalid email' },
       });
     } else if (!user) {
       setAlertMessage({
@@ -176,13 +179,13 @@ export default function SignIn() {
             User doesn't exists. Please <Link to="/sign-up">Sign Up</Link>
           </span>
         ),
-        type: "error",
+        type: 'error',
         open: true,
       });
     } else if (formData.password !== user.password) {
       setAlertMessage({
-        message: "Invalid password",
-        type: "error",
+        message: 'Invalid password',
+        type: 'error',
         open: true,
       });
     } else {
@@ -190,11 +193,11 @@ export default function SignIn() {
 
       setOnChangeValidation(false);
 
-      navigate("/contact-list");
+      navigate('/contact-list');
 
       context.setAlertMessageData({
-        message: "Signed Up Successfully!!",
-        type: "success",
+        message: 'Signed Up Successfully!!',
+        type: 'success',
         open: true,
       });
     }
@@ -205,20 +208,20 @@ export default function SignIn() {
       <Box
         sx={{
           marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}
         className="signInContainer"
       >
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign In
         </Typography>
         {alertMessage.open && (
-          <Alert sx={{ width: "100%" }} severity={alertMessage.type}>
+          <Alert sx={{ width: '100%' }} severity={alertMessage.type}>
             {alertMessage.message}
           </Alert>
         )}
@@ -243,7 +246,7 @@ export default function SignIn() {
             fullWidth
             name="password"
             label="Password"
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             id="password"
             autoComplete="current-password"
             value={formData.password}
@@ -257,12 +260,12 @@ export default function SignIn() {
                 <InputAdornment position="start">
                   {showPassword ? (
                     <VisibilityIcon
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: 'pointer' }}
                       onClick={() => setShowPassword(false)}
                     />
                   ) : (
                     <VisibilityOffIcon
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: 'pointer' }}
                       onClick={() => setShowPassword(true)}
                     />
                   )}

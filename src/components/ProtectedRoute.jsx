@@ -1,5 +1,5 @@
-import { Navigate, Outlet, useOutletContext } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
+import { Navigate, Outlet, useOutletContext } from 'react-router-dom';
 
 function ProtectedRoute() {
   const currentUser = useSelector((state) => state.auth.currentUser);

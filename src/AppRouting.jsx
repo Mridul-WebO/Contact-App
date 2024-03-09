@@ -1,18 +1,19 @@
-import { createBrowserRouter } from "react-router-dom";
-import App from "./App";
-import SignIn from "./pages/signIn/SignIn";
-import SignUp from "./pages/signUp/SignUp";
-import ProtectedRoute from "./components/ProtectedRoute";
-import ContactList from "./pages/contactList/ContactList";
-import Authenticate from "./components/Authenticate";
-import ErrorPage from "./pages/errorPage/ErrorPage";
-import { Provider } from "react-redux";
-import store, { persistor } from "./app/store";
-import { PersistGate } from "redux-persist/integration/react";
+import { Provider } from 'react-redux';
+import { createBrowserRouter } from 'react-router-dom';
+import { PersistGate } from 'redux-persist/integration/react';
+
+import App from './App';
+import store, { persistor } from './app/store';
+import Authenticate from './components/Authenticate';
+import ProtectedRoute from './components/ProtectedRoute';
+import ContactList from './pages/contactList/ContactList';
+import ErrorPage from './pages/errorPage/ErrorPage';
+import SignIn from './pages/signIn/SignIn';
+import SignUp from './pages/signUp/SignUp';
 
 const AppRouting = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: (
       <Provider store={store}>
         <PersistGate persistor={persistor}>
@@ -25,11 +26,11 @@ const AppRouting = createBrowserRouter([
         element: <Authenticate />,
         children: [
           {
-            path: "",
+            path: '',
             element: <SignIn />,
           },
           {
-            path: "sign-up",
+            path: 'sign-up',
             element: <SignUp />,
           },
         ],
@@ -38,7 +39,7 @@ const AppRouting = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           {
-            path: "contact-list",
+            path: 'contact-list',
             element: <ContactList />,
           },
         ],
@@ -47,7 +48,7 @@ const AppRouting = createBrowserRouter([
   },
 
   {
-    path: "*",
+    path: '*',
     element: <ErrorPage />,
   },
 ]);

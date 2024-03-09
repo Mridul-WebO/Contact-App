@@ -1,4 +1,4 @@
-const ADD_USER = "ADD_USER";
+const ADD_USER = 'ADD_USER';
 
 const initialState = {
   data: [],

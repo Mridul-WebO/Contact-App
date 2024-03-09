@@ -1,13 +1,11 @@
-import { Navigate, Outlet, useOutletContext } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { isLoggedinSelector } from "../features/auth/authReducer";
+import { useSelector } from 'react-redux';
+import { Navigate, Outlet, useOutletContext } from 'react-router-dom';
 
 function Authenticate() {
-  const currentUser = useSelector(isLoggedinSelector);
-  // const currentUser = useSelector((state) => state.auth.currentUser);
+  const currentUser = useSelector((state) => state.auth.currentUser);
   const context = useOutletContext();
 
-  if (currentUser) {
+  if (Object.keys(currentUser).length !== 0) {
     return <Navigate to="/contact-list" />;
   }
 

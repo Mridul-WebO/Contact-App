@@ -1,8 +1,8 @@
-const ADD_CONTACT = "ADD_CONTACT";
-const UPDATE_CONTACT = "UPDATE_CONTACT";
-const DELETE_CONTACT = "DELETE_CONTACT";
-const IMPORT_CONTACTS = "IMPORT_CONTACTS";
-const DELETE_ALL_CONTACTS = "DELETE_ALL_CONTACTS";
+const ADD_CONTACT = 'ADD_CONTACT';
+const UPDATE_CONTACT = 'UPDATE_CONTACT';
+const DELETE_CONTACT = 'DELETE_CONTACT';
+const IMPORT_CONTACTS = 'IMPORT_CONTACTS';
+const DELETE_ALL_CONTACTS = 'DELETE_ALL_CONTACTS';
 
 const initialState = {
   data: [],
@@ -18,6 +18,7 @@ const userContactReducer = (state = initialState, action) => {
       };
 
     case UPDATE_CONTACT:
+      // eslint-disable-next-line no-case-declarations
       const contactIndex = state.data.findIndex(
         (contact) => contact._id === action.payload._id
       );
@@ -40,6 +41,7 @@ const userContactReducer = (state = initialState, action) => {
       };
 
     case DELETE_ALL_CONTACTS:
+      // eslint-disable-next-line no-case-declarations
       const updatedData = state.data.filter((contact) => {
         return contact.userId !== action.payload;
       });
